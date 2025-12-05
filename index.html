@@ -1,0 +1,1511 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夏由里 | Commission Price List</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+        /* 避免頁面載入時的閃爍 */
+        body { opacity: 0; animation: fadeIn 0.5s forwards; }
+        @keyframes fadeIn { to { opacity: 1; } }
+        /* 隱藏滾動條但保持功能 */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-[#F9F9F9]">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- 全域變數解構 ---
+        const { useState, useEffect, useCallback, useRef } = React;
+
+        // --- ★★★ 內建圖示庫 (解決 CDN 載入錯誤) ★★★ ---
+        // 為了確保穩定性，我們直接定義 Icon 元件，而不依賴外部不穩定的 UMD 腳本
+        const IconBase = ({ children, color = "currentColor", size = 24, className, ...props }) => (
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width={size} 
+                height={size} 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke={color} 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className={className}
+                {...props}
+            >
+                {children}
+            </svg>
+        );
+
+        const Icons = {
+            Palette: (p) => <IconBase {...p}><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></IconBase>,
+            List: (p) => <IconBase {...p}><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></IconBase>,
+            Image: (p) => <IconBase {...p}><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></IconBase>,
+            FileText: (p) => <IconBase {...p}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></IconBase>,
+            User: (p) => <IconBase {...p}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></IconBase>,
+            Heart: (p) => <IconBase {...p}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></IconBase>,
+            Sparkles: (p) => <IconBase {...p}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M7 5h4"/></IconBase>,
+            CheckCircle2: (p) => <IconBase {...p}><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></IconBase>,
+            AlertCircle: (p) => <IconBase {...p}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></IconBase>,
+            Mail: (p) => <IconBase {...p}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></IconBase>,
+            Instagram: (p) => <IconBase {...p}><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></IconBase>,
+            Twitter: (p) => <IconBase {...p}><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></IconBase>,
+            Facebook: (p) => <IconBase {...p}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></IconBase>,
+            RefreshCw: (p) => <IconBase {...p}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></IconBase>,
+            LayoutGrid: (p) => <IconBase {...p}><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></IconBase>,
+            Smile: (p) => <IconBase {...p}><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></IconBase>,
+            PenTool: (p) => <IconBase {...p}><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></IconBase>,
+            ChevronRight: (p) => <IconBase {...p}><path d="m9 18 6-6-6-6"/></IconBase>,
+            Donut: (p) => <IconBase {...p}><path d="M20.5 10a2.5 2.5 0 0 1-2.4-3H18a2.95 2.95 0 0 1-2.6-4.4 10 10 0 1 0 6.3 7.1c-.3.2-.8.3-1.2.3"/><path d="M16 13a4 4 0 1 1-4-4"/></IconBase>, // 使用甜甜圈/圓形路徑模擬
+            XCircle: (p) => <IconBase {...p}><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></IconBase>,
+            Cat: (p) => <IconBase {...p}><path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58-.42 7-.42 7 .57 1.07 1 2.24 1 3.44C21 17.9 16.97 21 12 21s-9-3.1-9-7.56c0-1.25.5-2.4 1-3.44 0 0-1.89-6.42-.5-7 1.39-.58 4.72.23 6.5 2.23A9.04 9.04 0 0 1 12 5Z"/><path d="M8 14v.5"/><path d="M16 14v.5"/><path d="M11.25 16.25h1.5"/></IconBase>,
+            Play: (p) => <IconBase {...p}><polygon points="5 3 19 12 5 21 5 3"/></IconBase>,
+            Zap: (p) => <IconBase {...p}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></IconBase>,
+            Briefcase: (p) => <IconBase {...p}><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></IconBase>,
+            LayoutTemplate: (p) => <IconBase {...p}><rect width="18" height="7" x="3" y="3" rx="1"/><rect width="9" height="7" x="3" y="14" rx="1"/><rect width="5" height="7" x="16" y="14" rx="1"/></IconBase>,
+            ClipboardList: (p) => <IconBase {...p}><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></IconBase>,
+            ArrowRight: (p) => <IconBase {...p}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></IconBase>,
+            ExternalLink: (p) => <IconBase {...p}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></IconBase>
+        };
+
+        // 解構使用
+        const { 
+            Palette, List, Image: LucideImage, FileText, User, Heart, Sparkles, 
+            CheckCircle2, AlertCircle, Mail, Instagram, Twitter, Facebook, 
+            RefreshCw, LayoutGrid, Smile, PenTool, ChevronRight, Donut, 
+            XCircle, Cat, Play, Zap, Briefcase, LayoutTemplate, ClipboardList, 
+            ArrowRight, ExternalLink 
+        } = Icons;
+
+
+        // --- 自定義圖示組件 ---
+        const PlurkIcon = ({ size = 24, className }) => {
+            return (
+                <svg 
+                    width={size} 
+                    height={size} 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className={className}
+                >
+                    <path d="M6 4v16" />
+                    <path d="M6 4h6a6 6 0 0 1 0 12h-6" />
+                </svg>
+            );
+        };
+
+        const ThreadsIcon = ({ size = 24, className }) => {
+            return (
+                <svg 
+                    width={size} 
+                    height={size} 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className={className}
+                >
+                    <path d="M19 12c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7c1.5 0 2.9-.5 4-1.3" />
+                    <path d="M14.5 12a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z" />
+                    <path d="M14.5 12v2.5" />
+                    <path d="M14.5 14.5c0 1.3 1.1 2.5 2.5 2.5s2.5-1.2 2.5-2.5V12" />
+                </svg>
+            );
+        };
+
+        // --- ★★★ 設定區：社群連結 (在此統一管理) ★★★ ---
+        const SOCIAL_URLS = {
+            facebook: "https://www.facebook.com/Yulii0400149",
+            threads: "https://www.threads.net/@YOUR_ID", 
+            plurk: "https://www.plurk.com/Yulii0400149",
+            mail: "mailto:yulii0400149@gmail.com"
+        };
+
+        // --- Google Sheets 設定 ---
+        const STATUS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1O7HyFnZuDqmtCl6Xx-DOGUfkiYU3N5bh6RxOAUpGPhUIM_MUGpp2eUoi02D3nJ7pGDs3bMMmeFov/pub?gid=1522759652&single=true&output=csv"; 
+        const PORTFOLIO_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1O7HyFnZuDqmtCl6Xx-DOGUfkiYU3N5bh6RxOAUpGPhUIM_MUGpp2eUoi02D3nJ7pGDs3bMMmeFov/pub?gid=1097263730&single=true&output=csv"; 
+        const TERMS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1O7HyFnZuDqmtCl6Xx-DOGUfkiYU3N5bh6RxOAUpGPhUIM_MUGpp2eUoi02D3nJ7pGDs3bMMmeFov/pub?gid=2050727362&single=true&output=csv"; 
+
+        const COMMISSION_ICON_URL = "https://images.plurk.com/6eAxHI5lRVGZXJ65i2Ju5Q.jpg"; 
+
+        // 預設排單資料
+        const DEFAULT_QUEUE = [
+            { id: 1, name: "範例-K***", status: "草稿確認中", progress: 30 },
+            { id: 2, name: "範例-M***", status: "底色繪製中", progress: 60 },
+            { id: 3, name: "範例-S***", status: "細化完稿中", progress: 90 },
+        ];
+
+        // 預設注意事項內容
+        const DEFAULT_TERMS = {
+            process: {
+                title: "委託流程",
+                content: `<ul class="list-disc list-inside space-y-1"><li><span class="font-medium">模版委託：</span>線稿底色 ⮕ 完稿</li><li><span class="font-medium">一般委託：</span>草稿 ⮕ 線稿底色 ⮕ 完稿</li></ul>`
+            },
+            rush: {
+                title: "急件加價規則",
+                content: `<div class="space-y-2"><p>距離確認委託時間一星期以上排單插隊價格統一 <span class="text-red-500">+500</span><br/><span class="text-[10px] opacity-70">（適用：確認委託時間為8/1，您需要8/10前取得完稿）</span></p><p>一星期內急件價格 <span class="text-amber-500">* 2</span>（上限 +NT.2000）</p><p>兩天內出圖 <span class="text-amber-500">* 2.5</span><br/><span class="text-[10px] opacity-70">（適用：確認委託時間為8/1，您需要8/6前取得完稿委託頭貼NT.1000 &gt;&gt; 急件2000）</span></p><p>三人以上正比插圖急單另計，請私訊估價<br/>當天就要的委託直接詢問我</p></div>`
+            },
+            commercial: {
+                title: "商用委託 & 買斷價格倍率",
+                content: `<ul class="space-y-1"><li>價目表皆為非商業用的價格，商用價格 <span class="text-blue-500">* 2.5 up</span></li><li>Vtuber 用圖僅宣傳 & 少量使用 <span class="text-blue-500">* 2.5</span>，量大或是其他商店盈利可以私訊詢問</li><li>非商用買斷 <span class="text-blue-500">* 3</span>，商用買斷 <span class="text-blue-500">* 5</span></li></ul>`
+            },
+            template: {
+                title: "模板委託",
+                content: "模板委託規則完全參考當期釋出規範，不一定適用以上規則"
+            },
+            provide: {
+                title: "委託提供資料",
+                content: `<p class="mb-2">角色設定、互動（骨架圖可，不會照描）、表情、背景圖片參考、付款方式</p><p>沒有想法也可以選擇當作驚喜包讓我自由發揮，我會很開心，怕變成驚嚇包也可以直接和我討論出構圖畫面。</p>`
+            }
+        };
+
+        // 作品集分類結構
+        const INITIAL_CATEGORIES = [
+            { 
+                id: 'normal', 
+                name: '正比', 
+                items: [
+                    { 
+                        title: '正比頭貼', 
+                        urls: [
+                            "https://images.plurk.com/uO75w0OLVQZTLHj2YLgLt.jpg",
+                            "https://images.plurk.com/4OmcOtem9blDuA8sLCBWoQ.jpg",
+                            "https://images.plurk.com/79tDwfnBjat2R76ZNwevjS.jpg",
+                            "https://images.plurk.com/1rfEPGkKYeSNkcUasUcJ8y.jpg",
+                            "https://images.plurk.com/6sDB8OsMOs2ugAYOEGZmVu.jpg",
+                            "https://images.plurk.com/4H10D5mfVAqBNaj3TkmhmZ.jpg",
+                            "https://images.plurk.com/44s1JcxjA5LnSaBlUen7du.jpg"
+                        ], 
+                        count: 5, 
+                        colorTone: 'blue' 
+                    },
+                    { 
+                        title: '正比半身', 
+                        urls: [
+                            "https://images.plurk.com/2x5FoWpwpweO5nDTxT5fPF.jpg",
+                            "https://images.plurk.com/1FOXbYYul1sIE7OOGXVMMg.jpg",
+                            "https://images.plurk.com/4DDFxixdyEmvAjhrapyOF9.jpg",
+                            "https://images.plurk.com/7G6rlygQMSSofos1rSTnwR.jpg",
+                            "https://images.plurk.com/6UehkANd2TUJLKzDR30kR0.jpg",
+                            "https://images.plurk.com/7l4BPIENRi1lP5OWGFuKaS.jpg",
+                            "https://images.plurk.com/65Cd3waiS2QsxAarj5U4xb.jpg",
+                            "https://images.plurk.com/1CuK8rdC2k9Fkdg1CeQaUp.jpg"
+                        ], 
+                        count: 4, 
+                        colorTone: 'slate',
+                        heightClass: "h-[282px]"
+                    },
+                    { 
+                        title: '半身插圖', 
+                        urls: [], 
+                        count: 4, 
+                        colorTone: 'indigo',
+                        heightClass: "h-[282px]"
+                    },
+                    { 
+                        title: '全身立繪', 
+                        urls: [
+                            "https://images.plurk.com/qUFyEDCDwx1YS3fN5w6RH.jpg",
+                            "https://images.plurk.com/43ayprKbbN9YoeRa10ET7T.jpg",
+                            "https://images.plurk.com/10b9t9RTrau6ggLEkrPb3l.jpg",
+                            "https://images.plurk.com/3rWr3FQqPptoUvJzS6dfv1.jpg",
+                            "https://images.plurk.com/27Wj9r2z7sJqbnzEjvVttg.jpg",
+                            "https://images.plurk.com/5U3rmt9p1sP8QYeritoGMh.jpg"
+                        ], 
+                        count: 4, 
+                        colorTone: 'teal',
+                        heightClass: "h-[282px]"
+                    }
+                ] 
+            },
+            { 
+                id: 'chibi', 
+                name: 'Ｑ版', 
+                items: [
+                    { 
+                        title: 'Ｑ版頭貼', 
+                        urls: [
+                            "https://images.plurk.com/5Y1wlUe39tFDXqXf51QmNo.jpg",
+                            "https://images.plurk.com/37PqU8G8DpMGwR8AXnOpKV.jpg",
+                            "https://images.plurk.com/34izE34Gr6doNjm48Mrjck.jpg",
+                            "https://images.plurk.com/5hIxbqwCxejnayotWY7i2D.jpg",
+                            "https://images.plurk.com/zQ92Hf0OiZc3hH5zfc4uS.jpg"
+                        ], 
+                        count: 6, 
+                        colorTone: 'rose' 
+                    },
+                    { 
+                        title: 'Ｑ版全身', 
+                        urls: [
+                            "https://images.plurk.com/1PV4qjhyqgQ3JlrGmz784g.jpg",
+                            "https://images.plurk.com/4Jw62PCKlw0eyEPAbxmtMF.jpg",
+                            "https://images.plurk.com/mcmooy8E1pPfluJ6hAmwT.jpg",
+                            "https://images.plurk.com/2MOWQ24Q7Kr2WHprJq4FPh.jpg",
+                            "https://images.plurk.com/6WYC0lfzAeJtgjPEIkTDam.jpg",
+                            "https://images.plurk.com/6Bj4OTxzAb8W8gNaZ0ZKXu.jpg",
+                            "https://images.plurk.com/2K5GNk3hX3mwx1RDA2VQc4.jpg",
+                            "https://images.plurk.com/7w4diGK7VWgbFE9w1Mdjw7.jpg",
+                            "https://images.plurk.com/6R0Aj9Ml7wU6IcGb7Vk6tG.jpg",
+                            "https://images.plurk.com/3t5oKZ1BnfGdUJWV3dTPSi.jpg"
+                        ], 
+                        count: 5, 
+                        colorTone: 'orange' 
+                    },
+                    { 
+                        title: 'Ｑ版插圖', 
+                        urls: [
+                            "https://images.plurk.com/6chk7xnKVuyUIzHFGhdbor.jpg",
+                            "https://images.plurk.com/78hHxAFlBCSIV5dlUmhKK8.jpg",
+                            "https://images.plurk.com/5pImFw6KSyOQsf4TCQgWZO.jpg",
+                            "https://images.plurk.com/5yrzLQOcyFKEsZuxTEtBY7.jpg",
+                            "https://images.plurk.com/6UKt7nrsckHs8qbrSplWsm.jpg"
+                        ], 
+                        count: 4, 
+                        colorTone: 'pink',
+                        widthClass: "min-w-[288px] w-[260px]" 
+                    },
+                    { 
+                        title: '服裝設計', 
+                        urls: [
+                            "https://images.plurk.com/6HartYiK9jAXXeTpTExTsz.jpg",
+                            "https://images.plurk.com/72FZTwMGCWz1FMm802P3xM.jpg",
+                            "https://images.plurk.com/7ba4OPL8bFYC7g8wSQwBlZ.jpg"
+                        ], 
+                        count: 3, 
+                        colorTone: 'indigo',
+                        widthClass: "min-w-[220px] w-[220px]" 
+                    }
+                ] 
+            },
+            { 
+                id: 'other', 
+                name: '其他', 
+                items: [
+                    { 
+                        title: '簡單線條', 
+                        urls: [], 
+                        count: 5, 
+                        colorTone: 'gray',
+                        heightClass: "h-[282px]" 
+                    },
+                    { 
+                        title: '黑白塗鴉', 
+                        urls: [
+                            "https://images.plurk.com/4L4tnNaehQODD4p8avtPxc.jpg",
+                            "https://images.plurk.com/6Hb1fOuh7BrpIrXrw0jYl1.jpg",
+                            "https://images.plurk.com/3UqRaIDahvGzHAjS2rqzO9.jpg",
+                        ], 
+                        count: 3, 
+                        colorTone: 'stone',
+                        heightClass: "h-[282px]" 
+                    },
+                    { 
+                        title: 'LINE貼圖', 
+                        urls: [], 
+                        count: 6, 
+                        colorTone: 'emerald' 
+                    },
+                    { 
+                        title: '客製化周邊印製', 
+                        urls: [], // 這裡可以放影片網址 (mp4)
+                        count: 4, 
+                        colorTone: 'slate' 
+                    }
+                ] 
+            },
+            // 模板分類 (預設值，會被雲端資料更新)
+            {
+                id: 'template',
+                name: '模板',
+                items: [
+                    {
+                        title: '當期模板',
+                        urls: [],
+                        count: 1,
+                        colorTone: 'lavender'
+                    }
+                ]
+            }
+        ];
+
+        // ★★★ 智慧型圖片元件：自動偵測尺寸與影片 ★★★
+        const SmartArtItem = ({ color, text, subText, imageUrl, heightClass = "h-48" }) => {
+            const [isWide, setIsWide] = useState(false);
+            const imgRef = useRef(null);
+
+            const isVideo = imageUrl && (
+                imageUrl.toLowerCase().endsWith('.mp4') || 
+                imageUrl.toLowerCase().endsWith('.webm') || 
+                imageUrl.toLowerCase().endsWith('.mov')
+            );
+
+            const handleImageLoad = (e) => {
+                const { naturalWidth, naturalHeight } = e.target;
+                // 如果寬度明顯大於高度 (比例 1.3 以上)，視為橫圖
+                if (naturalWidth / naturalHeight > 1.3) {
+                    setIsWide(true);
+                }
+            };
+
+            // 計算寬度 Class
+            const widthClass = isWide ? "min-w-[320px] w-[320px]" : "min-w-[200px] w-[200px]";
+
+            return (
+                <div className={`${widthClass} ${heightClass} snap-center flex-shrink-0`}>
+                    <div className={`w-full h-full ${!imageUrl ? color : 'bg-slate-100'} flex flex-col items-center justify-center text-slate-600/70 rounded-2xl overflow-hidden relative group transition-all duration-300 hover:shadow-md`}>
+                    {imageUrl ? (
+                        isVideo ? (
+                        <div className="w-full h-full relative bg-black">
+                            <video 
+                            src={imageUrl} 
+                            className="w-full h-full object-cover" 
+                            muted 
+                            loop 
+                            playsInline 
+                            autoPlay 
+                            />
+                            <div className="absolute top-2 right-2 text-white/80">
+                                <Play size={14} fill="currentColor" />
+                            </div>
+                        </div>
+                        ) : (
+                        <img 
+                            ref={imgRef}
+                            src={imageUrl} 
+                            alt={text} 
+                            onLoad={handleImageLoad}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                        />
+                        )
+                    ) : (
+                        <>
+                        <div className="absolute inset-0 bg-white/0 group-hover:bg-white/30 transition-all duration-500"></div>
+                        <Sparkles className="absolute top-2 right-2 w-4 h-4 opacity-30 group-hover:opacity-60 transition-opacity" />
+                        <span className="text-xs tracking-widest font-light z-10">{text}</span>
+                        {subText && <span className="text-[10px] opacity-60 mt-1 tracking-wider z-10">{subText}</span>}
+                        </>
+                    )}
+                    {imageUrl && !isVideo && (
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+                    )}
+                    </div>
+                </div>
+            );
+        };
+
+        // 跑馬燈專用 (固定尺寸)
+        const MarqueeItem = ({ color, text, imageUrl }) => {
+            const isVideo = imageUrl && imageUrl.toLowerCase().endsWith('.mp4');
+            return (
+                <div className="w-64 h-40 rounded-2xl flex-shrink-0 overflow-hidden bg-slate-100 relative">
+                    {imageUrl ? (
+                        isVideo ? (
+                            <video src={imageUrl} className="w-full h-full object-cover" muted loop playsInline autoPlay />
+                        ) : (
+                            <img src={imageUrl} alt="Marquee" className="w-full h-full object-cover" />
+                        )
+                    ) : (
+                        <div className={`w-full h-full ${color} flex items-center justify-center`}>
+                            <span className="text-xs tracking-widest font-light text-slate-600/70">{text}</span>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // ★★★ 基礎 ArtItem (用於關於我、無圖片狀態) ★★★
+        const ArtItem = ({ color, text, subText, imageUrl }) => {
+            const isVideo = imageUrl && (
+                imageUrl.toLowerCase().endsWith('.mp4') || 
+                imageUrl.toLowerCase().endsWith('.webm') || 
+                imageUrl.toLowerCase().endsWith('.mov')
+            );
+            
+            return (
+                <div className={`w-full h-full ${!imageUrl ? color : 'bg-slate-100'} flex flex-col items-center justify-center text-slate-600/70 rounded-2xl overflow-hidden relative group transition-all duration-300 hover:shadow-md`}>
+                {imageUrl ? (
+                    isVideo ? (
+                    <div className="w-full h-full relative bg-black">
+                        <video src={imageUrl} className="w-full h-full object-cover" muted loop playsInline autoPlay />
+                        <div className="absolute top-2 right-2 text-white/80">
+                            <Play size={14} fill="currentColor" />
+                        </div>
+                    </div>
+                    ) : (
+                    <img src={imageUrl} alt={text} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    )
+                ) : (
+                    <>
+                    <div className="absolute inset-0 bg-white/0 group-hover:bg-white/30 transition-all duration-500"></div>
+                    <Sparkles className="absolute top-2 right-2 w-4 h-4 opacity-30 group-hover:opacity-60 transition-opacity" />
+                    <span className="text-xs tracking-widest font-light z-10">{text}</span>
+                    {subText && <span className="text-[10px] opacity-60 mt-1 tracking-wider z-10">{subText}</span>}
+                    </>
+                )}
+                {imageUrl && !isVideo && (
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+                )}
+                </div>
+            );
+        };
+
+        // 價目表資料 (已還原您的文字內容)
+        const priceList = [
+            {
+                category: "正比系列",
+                targetId: 'normal', 
+                theme: {
+                    bg: "bg-[#F0F4F8]", 
+                    borderHover: "hover:border-blue-200",
+                    icon: "text-blue-300 group-hover:text-blue-500",
+                    highlight: "group-hover:text-blue-500"
+                },
+                items: [
+                    { title: "正比頭貼", price: "NT. 800+", desc: "精緻全彩 / 含簡易背景裝飾 / 可加價繪製物件", tags: ["頭貼", "精緻"] },
+                    { title: "正比半身", price: "NT. 2000+", desc: "範圍腰部以上 / 動作可指定 / 背景另外加價", tags: ["插圖", "多物件"] }, // 還原
+                    { title: "半身插圖", price: "NT. 3000+", desc: "包含精緻背景 / 完整構圖 / 氛圍感強烈", tags: ["插圖", "背景"] },
+                    { title: "全身立繪", price: "NT. 3000+", desc: "可加價角色設計、排版表情差分 / 完整細節", tags: ["立繪", "設計"] }, // 還原價格
+                ]
+            },
+            {
+                category: "Ｑ版系列",
+                targetId: 'chibi', 
+                theme: {
+                    bg: "bg-[#F9F6F7]", 
+                    borderHover: "hover:border-rose-200",
+                    icon: "text-rose-300 group-hover:text-rose-500",
+                    highlight: "group-hover:text-rose-500"
+                },
+                items: [
+                    { title: "Ｑ版頭貼", price: "NT. 600+", desc: "可愛簡約大頭 / 可加價繪製多物件", tags: ["可愛", "大頭"] },
+                    { title: "Ｑ版全身", price: "NT. 800+", desc: "可製作飯友 / 可配合大物件&動物等", tags: ["全身", "周邊印製最佳選"] }, // 還原
+                    { title: "Ｑ版插圖", price: "NT. 1500+", desc: "包含光影背景 / 氛圍感", tags: ["插圖", "豐富"] },
+                    { title: "服裝設計", price: "NT. 1500+", desc: "指定主題設計 / 含服裝配件", tags: ["拆分", "換裝娃娃"] }, // 還原
+                ]
+            },
+            {
+                category: "其他項目",
+                targetId: 'other', 
+                theme: {
+                    bg: "bg-[#F2F7F5]", 
+                    borderHover: "hover:border-emerald-200",
+                    icon: "text-emerald-300 group-hover:text-emerald-600",
+                    highlight: "group-hover:text-emerald-600"
+                },
+                items: [
+                    { title: "簡單線條", price: "NT. 300+", desc: "單色線條 / 簡單上色", tags: ["極簡", "可作線稿"] }, // 還原
+                    { title: "黑白塗鴉", price: "NT. 800+", desc: "正比隨筆 / 線條感", tags: ["塗鴉", "上色+100"] }, // 還原
+                    { title: "貼圖", price: "NT. 2800+", desc: "靜態貼圖 / 一組 8 張", tags: ["少量張數私訊報價"] }, // 還原
+                    { title: "客製化周邊印製", price: "私訊詢問詳細報價", desc: "少量製作 / 特殊工藝 / 一條龍服務", tags: ["周邊", "印製"] },
+                ]
+            },
+            // 模板委託
+            {
+                category: "模板委託",
+                targetId: 'template',
+                theme: {
+                    bg: "bg-[#F7F7F9]", 
+                    borderHover: "hover:border-slate-200",
+                    icon: "text-slate-300 group-hover:text-slate-500",
+                    highlight: "group-hover:text-slate-500"
+                },
+                items: [
+                    { 
+                        title: "當期模板", 
+                        price: "依模板定價", 
+                        desc: "點擊下方按鈕查看當期開放模板詳情，不定期掉落", 
+                        tags: ["限定", "模板"],
+                        hasLink: true,
+                        isTemplate: true 
+                    }
+                ]
+            }
+        ];
+
+        const getColorClass = (tone, index) => {
+            const intensities = [100, 200, 50, 300, 100, 200];
+            const intensity = intensities[index % intensities.length];
+            
+            const map = {
+                blue: `bg-blue-${intensity}`,
+                slate: `bg-slate-${intensity}`,
+                teal: `bg-teal-${intensity}`,
+                rose: `bg-rose-${intensity}`,
+                orange: `bg-orange-${intensity}`,
+                pink: `bg-pink-${intensity}`,
+                indigo: `bg-indigo-${intensity}`,
+                gray: `bg-gray-${intensity}`,
+                stone: `bg-stone-${intensity}`,
+                emerald: `bg-emerald-${intensity}`,
+                amber: `bg-amber-${intensity}`,
+                lavender: `bg-slate-100`, 
+            };
+            return map[tone] || `bg-slate-${intensity}`;
+        };
+
+        // 強力 CSV 解析器
+        const parseCSV = (text) => {
+            const rows = [];
+            let currentRow = [];
+            let currentVal = '';
+            let inQuote = false;
+            
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const nextChar = text[i + 1];
+                
+                if (char === '"') {
+                    if (inQuote && nextChar === '"') {
+                        currentVal += '"';
+                        i++; 
+                    } else {
+                        inQuote = !inQuote;
+                    }
+                } else if (char === ',' && !inQuote) {
+                    currentRow.push(currentVal);
+                    currentVal = '';
+                } else if ((char === '\r' || char === '\n') && !inQuote) {
+                    if (char === '\r' && nextChar === '\n') i++;
+                    currentRow.push(currentVal);
+                    if (currentRow.length > 0 && (currentRow.length > 1 || currentRow[0] !== '')) {
+                        rows.push(currentRow);
+                    }
+                    currentRow = [];
+                    currentVal = '';
+                } else {
+                    currentVal += char;
+                }
+            }
+            if (currentVal || currentRow.length > 0) {
+                currentRow.push(currentVal);
+                rows.push(currentRow);
+            }
+            return rows;
+        };
+
+        const cleanCSVValue = (val) => {
+            if (!val) return '';
+            return val.trim().replace(/^"|"$/g, '').replace(/""/g, '"');
+        };
+
+        const fetchDataFromCSV = async (url) => {
+            const timestamp = new Date().getTime();
+            const separator = url.includes('?') ? '&' : '?';
+            const urlWithTimestamp = `${url}${separator}_t=${timestamp}`;
+            
+            const proxies = [
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(urlWithTimestamp)}`,
+                `https://corsproxy.io/?${encodeURIComponent(urlWithTimestamp)}`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(urlWithTimestamp)}`,
+                urlWithTimestamp 
+            ];
+
+            for (const proxyUrl of proxies) {
+                try {
+                    const response = await fetch(proxyUrl);
+                    if (response.ok) {
+                        let text = await response.text();
+                        if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+                        if (text.trim().startsWith('<!DOCTYPE html') || text.trim().startsWith('<html')) continue; 
+                        return text;
+                    }
+                } catch (err) {
+                    console.warn(`Proxy failed: ${proxyUrl}`, err);
+                }
+            }
+            throw new Error("All proxies failed to fetch CSV data.");
+        };
+
+        function ArtistPortfolio() {
+            const [activePage, setActivePage] = useState('home');
+            const [queueData, setQueueData] = useState(DEFAULT_QUEUE);
+            const [isLoadingQueue, setIsLoadingQueue] = useState(false);
+            const [portfolioData, setPortfolioData] = useState(INITIAL_CATEGORIES);
+            const [marqueeImages, setMarqueeImages] = useState([]); 
+            const [fetchError, setFetchError] = useState(null);
+            const [debugLog, setDebugLog] = useState([]);
+            const [activePortfolioTab, setActivePortfolioTab] = useState('normal');
+            const [activePriceTab, setActivePriceTab] = useState(0);
+            const [currentSchedule, setCurrentSchedule] = useState("1月中");
+            const [termsContent, setTermsContent] = useState(DEFAULT_TERMS);
+            const [templateLinks, setTemplateLinks] = useState([]); 
+
+            const addDebugLog = (msg) => {
+                console.log(msg);
+                setDebugLog(prev => [...prev.slice(-4), msg]); 
+            };
+
+            const fetchStatus = useCallback(async () => {
+                if (!STATUS_CSV_URL) return;
+                setIsLoadingQueue(true);
+                setFetchError(null);
+                try {
+                    const text = await fetchDataFromCSV(STATUS_CSV_URL);
+                    const rows = parseCSV(text); 
+                    const dataRows = rows.slice(1);
+                    
+                    let scheduleValue = null;
+                    let newTemplateLinks = [];
+                    
+                    const parsedData = dataRows.map((row, index) => {
+                        if (row.length < 2) return null;
+                        
+                        const name = cleanCSVValue(row[0]);
+                        const status = cleanCSVValue(row[1]);
+                        const progressOrTags = cleanCSVValue(row[2] || ""); 
+                        
+                        const normalizedName = name.replace(/[\s:：]/g, '').toLowerCase();
+                        
+                        if (normalizedName.includes('排單') || normalizedName === 'schedule' || normalizedName === 'currentschedule') {
+                            scheduleValue = status;
+                            return null; 
+                        }
+
+                        if (name.startsWith('模板-')) {
+                            const title = name.replace('模板-', '');
+                            const tags = progressOrTags ? progressOrTags.split(/[,，\s]+/) : ["限定", "模板"];
+                            newTemplateLinks.push({ title: title, url: status, tags: tags });
+                            return null;
+                        }
+
+                        return {
+                            id: index + 1,
+                            name: name,
+                            status: status,
+                            progress: parseInt(progressOrTags.replace('%', '')) || 0
+                        };
+                    }).filter(Boolean);
+                    
+                    if (scheduleValue) setCurrentSchedule(scheduleValue);
+                    if (newTemplateLinks.length > 0) setTemplateLinks(newTemplateLinks);
+
+                    if (parsedData.length > 0) setQueueData(parsedData);
+                } catch (error) {
+                    console.error("排單讀取錯誤:", error);
+                    setFetchError("暫時無法同步雲端");
+                } finally {
+                    setIsLoadingQueue(false);
+                }
+            }, []);
+
+            const fetchPortfolio = useCallback(async () => {
+                if (!PORTFOLIO_CSV_URL) return;
+                try {
+                    const text = await fetchDataFromCSV(PORTFOLIO_CSV_URL);
+                    const rows = parseCSV(text);
+                    const newPortfolioData = JSON.parse(JSON.stringify(INITIAL_CATEGORIES));
+                    newPortfolioData.forEach(cat => cat.items.forEach(item => item.urls = []));
+
+                    let newMarqueeImages = [];
+                    let successCount = 0;
+                    
+                    const categoryMap = {
+                        'normal': 'normal', '正比': 'normal', '正比系列': 'normal',
+                        'chibi': 'chibi', 'q版': 'chibi', 'Ｑ版': 'chibi', 'q版系列': 'chibi', 'Ｑ版系列': 'chibi',
+                        'other': 'other', '其他': 'other', '其他項目': 'other',
+                        'template': 'template', '模板': 'template', '模板委託': 'template',
+                        'marquee': 'marquee', '跑馬燈': 'marquee', '主視覺': 'marquee', '主頁': 'marquee', 'hero': 'marquee'
+                    };
+
+                    let startIndex = 0;
+                    if (rows.length > 0) {
+                        const firstRowStr = rows[0].join('').toLowerCase();
+                        if (firstRowStr.includes('category') || firstRowStr.includes('分類')) {
+                            startIndex = 1;
+                        }
+                    }
+
+                    for (let i = startIndex; i < rows.length; i++) {
+                        const cols = rows[i];
+                        if (cols.length < 3) continue;
+
+                        const rawCat = cleanCSVValue(cols[0]).toLowerCase();
+                        const categoryId = categoryMap[rawCat] || rawCat;
+                        const itemTitle = cleanCSVValue(cols[1]);
+                        const imageUrlRaw = cleanCSVValue(cols.slice(2).join(' '));
+
+                        if (!categoryId || !imageUrlRaw) continue;
+
+                        const urls = imageUrlRaw.split(/[\s,\n]+/).filter(url => url.length > 5 && url.startsWith('http'));
+                        
+                        if (categoryId === 'marquee') {
+                            if (urls.length > 0) {
+                                newMarqueeImages.push(...urls);
+                            }
+                            continue; 
+                        }
+
+                        if (!itemTitle) continue;
+
+                        const category = newPortfolioData.find(c => c.id.toLowerCase() === categoryId);
+                        if (category) {
+                            const targetTitleClean = itemTitle.replace(/\s+/g, '').toLowerCase();
+                            const item = category.items.find(itm => {
+                                const sourceTitleClean = itm.title.replace(/\s+/g, '').toLowerCase();
+                                return sourceTitleClean === targetTitleClean || sourceTitleClean.includes(targetTitleClean);
+                            });
+
+                            if (!item && categoryId === 'template') {
+                                category.items.push({
+                                        title: itemTitle,
+                                        urls: urls,
+                                        count: urls.length,
+                                        colorTone: 'lavender'
+                                    });
+                                    successCount++;
+                                } else if (item) {
+                                    if (urls.length > 0) {
+                                        item.urls.push(...urls);
+                                        successCount++;
+                                    }
+                                } else {
+                                    if (i < 5) addDebugLog(`找不到項目: "${itemTitle}"`);
+                                }
+                            } else {
+                                if (i < 5) addDebugLog(`找不到分類: "${rawCat}"`);
+                            }
+                        }
+
+                        if (successCount > 0 || newMarqueeImages.length > 0) {
+                            setPortfolioData(newPortfolioData);
+                            setMarqueeImages(newMarqueeImages); 
+                            addDebugLog(`成功載入圖片 (範例: ${successCount}, 跑馬燈: ${newMarqueeImages.length})`);
+                            
+                            const templateCat = newPortfolioData.find(c => c.id === 'template');
+                            if (templateCat && templateCat.items.length > 1) {
+                                templateCat.items = templateCat.items.filter(i => i.title !== '當期模板' || i.urls.length > 0);
+                            }
+
+                        } else {
+                            addDebugLog("讀取成功但無效資料。請檢查試算表內容");
+                        }
+
+                    } catch (error) {
+                        console.error("作品集讀取錯誤:", error);
+                        addDebugLog(`連線失敗: ${error.message}`);
+                    }
+                }, []);
+
+            const fetchTerms = useCallback(async () => {
+                if (!TERMS_CSV_URL) return;
+                try {
+                    const text = await fetchDataFromCSV(TERMS_CSV_URL);
+                    const rows = parseCSV(text);
+                    const dataRows = rows.slice(1); 
+                    
+                    const newTerms = { ...DEFAULT_TERMS };
+                    let updatedCount = 0;
+                    
+                    dataRows.forEach(row => {
+                        if (row.length < 3) return;
+                        const key = cleanCSVValue(row[0]).toLowerCase(); 
+                        const title = cleanCSVValue(row[1]);
+                        const content = cleanCSVValue(row[2]);
+                        
+                        if (newTerms[key]) {
+                            newTerms[key] = { title, content };
+                            updatedCount++;
+                        }
+                    });
+                    
+                    if (updatedCount > 0) {
+                        setTermsContent(newTerms);
+                        addDebugLog(`成功更新 ${updatedCount} 項注意事項`);
+                    }
+                    
+                } catch (error) {
+                    console.error("注意事項讀取錯誤:", error);
+                }
+            }, []);
+
+            useEffect(() => {
+                fetchStatus();
+                fetchPortfolio();
+                fetchTerms();
+            }, [fetchStatus, fetchPortfolio, fetchTerms]);
+
+            const scrollTo = (id) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                    setActiveSection(id);
+                }
+            };
+
+            const handleJumpToCategory = (targetTab) => {
+                setActivePortfolioTab(targetTab);
+                setActivePage('portfolio');
+            };
+
+            const handleNavClick = (pageId) => {
+                setActivePage(pageId);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const renderContent = () => {
+                switch (activePage) {
+                    case 'home':
+                        return (
+                            <div className="animate-fade-in-up">
+                            <header className="pt-28 pb-12 overflow-hidden flex flex-col items-center justify-center min-h-[80vh]">
+                                <div className="text-center mb-10 space-y-3">
+                                <div className="inline-block px-3 py-1 rounded-full bg-[#EFF2F1] text-[#6A857D] text-[10px] tracking-[0.2em] font-medium border border-[#E5EBE9]">
+                                    ILLUSTRATION & DESIGN
+                                </div>
+                                <h1 className="text-xl md:text-2xl font-bold tracking-widest text-slate-700">
+                                    早上起不來（由里）
+                                </h1>
+                                <p className="text-xs text-slate-500 tracking-widest font-light">
+                                    早上和棉被辦婚禮，中午還在洞房，目前離不開被窩
+                                </p>
+                                </div>
+
+                                <div className="w-full relative py-4">
+                                <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-[#F9F9F9] to-transparent z-10"></div>
+                                <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-[#F9F9F9] to-transparent z-10"></div>
+                                <div className="w-full overflow-hidden whitespace-nowrap">
+                                    <div className="marquee-content gap-4 px-4">
+                                    {(() => {
+                                        const hasCloudImages = marqueeImages.length > 0;
+                                        const itemsToRender = hasCloudImages ? marqueeImages : [...Array(6)]; 
+                                        
+                                        return (
+                                            <>
+                                            <div className="flex gap-4">
+                                                {itemsToRender.map((item, i) => {
+                                                    if (hasCloudImages) {
+                                                        return (
+                                                            <div key={`m1-${i}`} className="w-64 h-40 rounded-2xl flex-shrink-0 overflow-hidden bg-slate-100">
+                                                                <MarqueeItem imageUrl={item} />
+                                                            </div>
+                                                        );
+                                                    } else {
+                                                        // 預設色塊邏輯
+                                                        const colors = ["bg-[#E1E6EB]", "bg-[#E1EBE8]", "bg-[#E3E3EA]", "bg-[#EBE3E3]", "bg-[#EBE8E1]", "bg-[#E1EBE4]"];
+                                                        return (
+                                                            <div key={`m1-${i}`} className={`w-64 h-40 rounded-2xl flex-shrink-0 ${colors[i % colors.length]}`}>
+                                                                <ArtItem color={colors[i % colors.length]} text={`Artwork 0${i+1}`} />
+                                                            </div>
+                                                        );
+                                                    }
+                                                })}
+                                            </div>
+                                            <div className="flex gap-4">
+                                                {itemsToRender.map((item, i) => {
+                                                    if (hasCloudImages) {
+                                                        return (
+                                                            <div key={`m2-${i}`} className="w-64 h-40 rounded-2xl flex-shrink-0 overflow-hidden bg-slate-100">
+                                                                <MarqueeItem imageUrl={item} />
+                                                            </div>
+                                                        );
+                                                    } else {
+                                                        const colors = ["bg-[#E1E6EB]", "bg-[#E1EBE8]", "bg-[#E3E3EA]", "bg-[#EBE3E3]", "bg-[#EBE8E1]", "bg-[#E1EBE4]"];
+                                                        return (
+                                                            <div key={`m2-${i}`} className={`w-64 h-40 rounded-2xl flex-shrink-0 ${colors[i % colors.length]}`}>
+                                                                <ArtItem color={colors[i % colors.length]} text={`Artwork 0${i+1}`} />
+                                                            </div>
+                                                        );
+                                                    }
+                                                })}
+                                            </div>
+                                            </>
+                                        );
+                                    })()}
+                                    </div>
+                                </div>
+                                </div>
+
+                                <div className="max-w-2xl mx-auto mt-8 px-6 text-[11px] leading-7 text-slate-500 font-light whitespace-pre-wrap text-center tracking-wide">
+                                哈嚕我是由里，喜歡畫女孩子，舒適圈女孩子/正太，還有可愛的圖，
+                                    <br/>
+                                    也可以委託我偏纖細的青少年，非人設定太複雜我會畫不好， 
+                                <br/>
+                                主修視覺傳達設計，排版擅長淡彩～黑白的簡約設計，簡單的包裝設計也會做，
+                                    <br/>
+                                    沒在網頁內提及的或是不暸解的都可以私訊詢問我。
+                                <br/><br/>
+                                私訊管道大多使用 
+                                <a href={SOCIAL_URLS.facebook} target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-blue-500 hover:underline mx-1">Facebook</a>、
+                                <a href={SOCIAL_URLS.threads} target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-black hover:underline mx-1">Threads</a>、
+                                <a href={SOCIAL_URLS.plurk} target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-[#cf682f] hover:underline mx-1">Plurk</a>、
+                                <a href={SOCIAL_URLS.mail} className="text-slate-600 hover:text-slate-800 hover:underline mx-1">信箱</a>
+                                可能會被吞到垃圾郵件
+                                </div>
+
+                            </header>
+                            </div>
+                        );
+                    case 'about':
+                        return (
+                            <section className="py-20 px-6 bg-white text-center min-h-screen animate-fade-in-up">
+                            <div className="max-w-md mx-auto pt-20">
+                                <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-tr from-slate-200 to-gray-200 p-1 mb-6">
+                                    <div className="w-full h-full bg-white rounded-full overflow-hidden">
+                                    <ArtItem color="bg-[#F9F9F9]" text="ME" imageUrl="https://images.plurk.com/1TSnCrvhnKFYHxzG0pF2E9.jpg" />
+                                    </div>
+                                </div>
+                                <h2 className="text-lg font-bold tracking-[0.2em] text-slate-600 mb-2">夏由里</h2>
+                                <p className="text-xs text-slate-500 tracking-widest font-light mb-8 leading-7">
+                                視覺傳達設計系畢業<br/>
+                                喜歡甜點、貓咪與回籠覺。<br/>
+                                小孩子外表的阿姨，<br/>
+                                再拆一層會發現裡面還是屁孩
+                                </p>
+                                
+                                <div className="flex justify-center gap-6 mt-8">
+                                    <a 
+                                    href={SOCIAL_URLS.facebook}
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="group flex flex-col items-center gap-2 transition-all hover:-translate-y-1"
+                                    >
+                                    <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100 transition-colors">
+                                        <Facebook size={16} />
+                                    </div>
+                                    <span className="text-[10px] text-slate-400 group-hover:text-blue-600 tracking-wider">Facebook</span>
+                                    </a>
+
+                                    <a 
+                                    href={SOCIAL_URLS.threads} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="group flex flex-col items-center gap-2 transition-all hover:-translate-y-1"
+                                    >
+                                    <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 group-hover:bg-zinc-50 group-hover:text-black group-hover:border-zinc-300 transition-colors">
+                                        <ThreadsIcon size={16} />
+                                    </div>
+                                    <span className="text-[10px] text-slate-400 group-hover:text-black tracking-wider">Threads</span>
+                                    </a>
+
+                                    <a 
+                                    href={SOCIAL_URLS.plurk} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="group flex flex-col items-center gap-2 transition-all hover:-translate-y-1"
+                                    >
+                                    <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 group-hover:bg-orange-50 group-hover:text-[#cf682f] group-hover:border-orange-100 transition-colors">
+                                        <PlurkIcon size={16} />
+                                    </div>
+                                    <span className="text-[10px] text-slate-400 group-hover:text-[#cf682f] tracking-wider">Plurk</span>
+                                    </a>
+
+                                    <a 
+                                    href={SOCIAL_URLS.mail}
+                                    className="group flex flex-col items-center gap-2 transition-all hover:-translate-y-1"
+                                    >
+                                    <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 group-hover:bg-[#E6EBF0] group-hover:text-[#7A8C99] group-hover:border-[#E6EBF0] transition-colors">
+                                        <Mail size={16} />
+                                    </div>
+                                    <span className="text-[10px] text-slate-400 group-hover:text-[#7A8C99] tracking-wider">Gmail</span>
+                                    </a>
+                                </div>
+                            </div>
+                            </section>
+                        );
+                    case 'portfolio':
+                        const portfolioTabs = ['normal', 'chibi', 'other', 'template'];
+                        const activePortfolioIndex = portfolioTabs.indexOf(activePortfolioTab);
+                        
+                        return (
+                            <section className="py-20 px-6 bg-[#F9F9F9] min-h-screen animate-fade-in-up">
+                            <div className="max-w-6xl mx-auto pt-10">
+                                <div className="flex flex-col items-center gap-2 mb-12">
+                                    <h2 className="text-lg font-medium tracking-widest text-slate-700">精選範例</h2>
+                                    <p className="text-[10px] text-slate-400 font-medium tracking-widest ml-auto flex items-center gap-1">
+                                    左右滑動查看 <ChevronRight size={10} />
+                                    </p>
+                                    
+                                    <div className="relative flex p-1 bg-slate-100 rounded-full mt-4 w-fit">
+                                    <div 
+                                        className="absolute top-1 bottom-1 bg-white rounded-full shadow-sm transition-all duration-300 ease-out"
+                                        style={{ 
+                                            left: `${activePortfolioIndex * 25 + 0.5}%`, 
+                                            width: '24%' 
+                                        }}
+                                    ></div>
+                                    
+                                    {portfolioData.map((cat) => (
+                                        <button
+                                        key={cat.id}
+                                        onClick={() => setActivePortfolioTab(cat.id)}
+                                        className={`relative z-10 px-6 py-2 rounded-full text-xs tracking-widest transition-colors duration-300 w-24 ${
+                                            activePortfolioTab === cat.id 
+                                            ? 'text-slate-700 font-medium' 
+                                            : 'text-slate-400 hover:text-slate-600'
+                                        }`}
+                                        >
+                                        {cat.name}
+                                        </button>
+                                    ))}
+                                    </div>
+                                </div>
+
+                                <div key={activePortfolioTab} className="space-y-12 animate-slide-up">
+                                    {portfolioData.find(c => c.id === activePortfolioTab)?.items.length > 0 ? (
+                                        <div className="space-y-12">
+                                            {portfolioData.find(c => c.id === activePortfolioTab)?.items.map((subItem, idx) => (
+                                            <div key={idx} className="space-y-4">
+                                                <div className="flex items-center gap-2 px-2">
+                                                <div className="w-1 h-4 bg-slate-200 rounded-full"></div>
+                                                <h3 className="text-sm text-slate-600 tracking-widest font-medium">{subItem.title}</h3>
+                                                </div>
+                                                
+                                                <div className="flex overflow-x-auto gap-4 pb-4 px-2 snap-x snap-mandatory hide-scrollbar">
+                                                {(() => {
+                                                    const hasImages = subItem.urls && subItem.urls.length > 0;
+                                                    let itemsToRender = hasImages ? subItem.urls : [...Array(subItem.count)];
+                                                    
+                                                    return itemsToRender.map((itemContent, imgIndex) => {
+                                                    const colorClass = getColorClass(subItem.colorTone, imgIndex);
+                                                    let heightClass = subItem.heightClass || "h-48";
+                                                    
+                                                    let displayText = subItem.title;
+                                                    if (activePortfolioTab === 'template' && !hasImages) {
+                                                            displayText = "目前未開放";
+                                                    }
+                        
+                                                    return (
+                                                        <SmartArtItem 
+                                                        key={imgIndex}
+                                                        color={colorClass}
+                                                        text={displayText}
+                                                        subText={hasImages ? `Sample ${String(imgIndex + 1).padStart(2, '0')}` : ''}
+                                                        imageUrl={hasImages ? itemContent : null}
+                                                        heightClass={heightClass}
+                                                        />
+                                                    );
+                                                    });
+                                                })()}
+                                                </div>
+                                            </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center text-slate-400 py-10 text-xs tracking-widest">目前沒有內容</div>
+                                    )}
+                                </div>
+                            </div>
+                            </section>
+                        );
+                    case 'pricing':
+                        return (
+                            <section className="py-20 px-6 max-w-5xl mx-auto bg-white min-h-screen animate-fade-in-up">
+                            <div className="pt-10 flex flex-col items-center gap-3 mb-12 justify-center">
+                                <h2 className="text-lg font-medium tracking-widest text-slate-700">委託項目</h2>
+                            
+                                <div className="relative flex p-1 bg-slate-100 rounded-full w-fit">
+                                    <div 
+                                        className="absolute top-1 bottom-1 bg-white rounded-full shadow-sm transition-all duration-300 ease-out"
+                                        style={{ 
+                                            left: `${activePriceTab * 25 + 0.5}%`, 
+                                            width: '24%' 
+                                        }}
+                                    ></div>
+
+                                    {priceList.map((category, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => setActivePriceTab(index)}
+                                        className={`relative z-10 px-6 py-2 rounded-full text-xs tracking-widest transition-colors duration-300 w-28 ${
+                                        activePriceTab === index 
+                                        ? 'text-slate-700 font-medium' 
+                                        : 'text-slate-400 hover:text-slate-600'
+                                        }`}
+                                    >
+                                        {category.category}
+                                    </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="min-h-[400px]">
+                                {(() => {
+                                const category = priceList[activePriceTab];
+                                const catIndex = activePriceTab;
+                                
+                                let displayItems = category.items;
+                                
+                                if (category.targetId === 'template' && templateLinks.length > 0) {
+                                    displayItems = templateLinks.map(link => ({
+                                        title: link.title,
+                                        price: "依模板定價",
+                                        desc: "點擊下方按鈕查看詳情",
+                                        tags: link.tags || ["限定", "模板"],
+                                        hasLink: true,
+                                        linkUrl: link.url,
+                                        isTemplate: true
+                                    }));
+                                }
+
+                                return (
+                                    <div key={catIndex} className="animate-slide-up">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        {displayItems.map((item, index) => {
+                                        const isSpecialPrice = item.price === "依模板定價" || item.price === "私訊詢問詳細報價";
+                                        
+                                        return (
+                                            <div key={index} className={`group relative ${category.theme.bg} rounded-[2rem] p-5 border border-slate-100 ${category.theme.borderHover} transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/40`}>
+                                                <div 
+                                                onClick={() => handleJumpToCategory(category.targetId)}
+                                                className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white border border-slate-100 rounded-full flex items-center justify-center group-hover:bg-[#F2F5F4] transition-colors cursor-pointer hover:scale-110 duration-300 z-10 shadow-sm"
+                                                title="點擊查看範例"
+                                                >
+                                                {catIndex === 0 && <LayoutGrid size={16} strokeWidth={1.5} className={`text-slate-300 ${category.theme.icon}`} />}
+                                                {catIndex === 1 && <Smile size={16} strokeWidth={1.5} className={`text-slate-300 ${category.theme.icon}`} />}
+                                                {catIndex === 2 && <PenTool size={16} strokeWidth={1.5} className={`text-slate-300 ${category.theme.icon}`} />}
+                                                {catIndex === 3 && <LayoutTemplate size={16} strokeWidth={1.5} className={`text-slate-300 ${category.theme.icon}`} />}
+                                                </div>
+                                                
+                                                <div className="text-center mt-4">
+                                                <h3 className="text-xs font-medium tracking-widest text-slate-700 mb-2">{item.title}</h3>
+                                                {/* ★★★ 修改：特殊價格字體與上方標題一致 (text-xs font-bold text-slate-600) ★★★ */}
+                                                {/* 並將顏色改深 (text-slate-600) */}
+                                                {/* 為了讓它垂直置中，加入 h-8 flex items-center justify-center */}
+                                                <div className="h-8 flex items-center justify-center mb-1">
+                                                    <span className={isSpecialPrice ? "text-xs font-bold text-slate-600" : "text-lg font-light text-slate-800 font-sans"}>
+                                                        {item.price}
+                                                    </span>
+                                                </div>
+
+                                                <div className="w-6 h-px bg-slate-200 mx-auto mb-3"></div>
+                                                <p className="text-[10px] text-slate-500 mb-4 leading-relaxed min-h-[4em]">{item.desc}</p>
+                                                
+                                                {item.hasLink ? (
+                                                    item.linkUrl ? (
+                                                        <a 
+                                                            href={item.linkUrl} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                            className="inline-block mb-4 px-4 py-1.5 rounded-full text-[10px] tracking-wider transition-colors flex items-center gap-1 mx-auto w-fit bg-violet-100 text-violet-700 hover:bg-violet-200 cursor-pointer"
+                                                            title="前往查看詳情"
+                                                        >
+                                                            詳情點此 <ExternalLink size={10} />
+                                                        </a>
+                                                    ) : (
+                                                        <span className="inline-block mb-4 px-4 py-1.5 text-[10px] tracking-wider text-slate-400 cursor-default">
+                                                            目前未開放
+                                                        </span>
+                                                    )
+                                                ) : null}
+                                                
+                                                <div className="flex flex-wrap gap-1.5 justify-center">
+                                                    {item.tags.map((tag, i) => (
+                                                    <span key={i} className="px-2 py-1 rounded-md bg-[#F7F9F9] text-[9px] text-slate-500 tracking-wider">
+                                                        #{tag}
+                                                    </span>
+                                                    ))}
+                                                </div>
+                                                </div>
+                                            </div>
+                                        );
+                                        })}
+                                    </div>
+                                    
+                                    <div className="mt-12 max-w-3xl mx-auto text-xs text-slate-500 tracking-wider leading-relaxed space-y-6 bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                                        <div>
+                                            <h4 className="font-bold mb-2 text-slate-600 text-sm">計費方式：</h4>
+                                            <p className="font-light">底價皆為單一角色的底價，多角色底價參考直接以底價乘以角色數量（插圖另計）依據角色整體複雜程度加價，完整的報價皆需私訊確認，需加購設計可私訊詢問，大圖（三視圖、雙人以上插圖）會有較大的價格浮動</p>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold mb-2 text-slate-600 text-sm">付款方式：</h4>
+                                            <p className="font-light mb-1">匯款（提供郵局、中信帳戶）/噗幣（1：40 無條件進入）/中信無卡/LINE PAY MONEY</p>
+                                            <p className="font-light"><span className="font-bold text-slate-600 bg-amber-100 px-1">確認收到款項才會進行排單</span>，如果要分期的可以討論</p>
+                                        </div>
+                                    </div>
+                                    </div>
+                                );
+                                })()}
+                            </div>
+                            </section>
+                        );
+                    case 'status':
+                        return (
+                            <section className="py-20 px-6 max-w-4xl mx-auto min-h-screen animate-fade-in-up">
+                            <div className="pt-20 flex items-center gap-3 mb-8 justify-center relative">
+                                <div className="h-px w-8 bg-slate-300"></div>
+                                <h2 className="text-lg font-medium tracking-widest text-slate-700">目前狀態</h2>
+                                <div className="h-px w-8 bg-slate-300"></div>
+                                
+                                <button 
+                                onClick={fetchStatus} 
+                                disabled={isLoadingQueue}
+                                className="absolute right-0 md:-right-12 p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all"
+                                title="重新整理排單"
+                                >
+                                <RefreshCw size={14} className={isLoadingQueue ? "animate-spin text-[#7A9089]" : ""} />
+                                </button>
+                            </div>
+
+                            <div className="grid md:grid-cols-3 gap-6">
+                                <div className="md:col-span-1 glass-panel rounded-3xl p-6 text-center space-y-4 flex flex-col justify-center items-center">
+                                {/* 使用自定義委託圖片或預設 Sparkles */}
+                                {COMMISSION_ICON_URL ? (
+                                    <div className="w-16 h-16 mx-auto rounded-full bg-[#F0F4F3] overflow-hidden flex items-center justify-center">
+                                        <img src={COMMISSION_ICON_URL} alt="Status" className="w-full h-full object-cover" />
+                                    </div>
+                                ) : (
+                                    <div className="w-16 h-16 mx-auto rounded-full bg-[#F0F4F3] flex items-center justify-center text-[#7A9089]">
+                                        <Sparkles size={24} strokeWidth={1.5} />
+                                    </div>
+                                )}
+                                
+                                <div>
+                                    <h3 className="text-sm font-medium tracking-widest text-slate-700">委託開放中</h3>
+                                    <div className="text-lg font-bold text-slate-600 my-4 tracking-widest">
+                                    目前排單：{currentSchedule}
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 mt-2 leading-relaxed font-light">
+                                    排單日期+工期=取得完稿時間<br/>歡迎私訊詢問檔期<br/>急單價格計算詳情見須知列<br/>商稿排單私訊，會以商稿優先<br/>非常歡迎鈔能力插隊ya
+                                    </p>
+                                </div>
+                                </div>
+
+                                <div className="md:col-span-2 space-y-3 relative min-h-[200px]">
+                                {isLoadingQueue && (
+                                    <div className="absolute inset-0 bg-white/80 z-20 flex flex-col items-center justify-center backdrop-blur-sm rounded-2xl transition-opacity duration-300">
+                                        <RefreshCw className="animate-spin text-[#7A9089] mb-2" size={24} />
+                                        <span className="text-xs text-slate-500 tracking-widest">同步雲端資料中...</span>
+                                    </div>
+                                )}
+                                
+                                {queueData.map((item) => (
+                                    <div key={item.id} className="bg-white rounded-2xl p-4 flex items-center justify-between shadow-sm border border-slate-100 hover:border-[#DCE6E2] transition-colors duration-300">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] text-slate-500 font-medium">
+                                        {item.id.toString().padStart(2, '0')}
+                                        </div>
+                                        <div>
+                                        <div className="text-xs font-medium text-slate-700 tracking-wider">{item.name}</div>
+                                        <div className="text-[10px] text-slate-500 mt-0.5">{item.status}</div>
+                                        </div>
+                                    </div>
+                                    <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                        <div 
+                                        className="h-full bg-[#8FA39D] rounded-full transition-all duration-1000 ease-out" 
+                                        style={{ width: `${item.progress}%` }}
+                                        ></div>
+                                    </div>
+                                    </div>
+                                ))}
+                                
+                                <div className="text-center text-[10px] mt-4 tracking-widest flex items-center justify-center gap-2">
+                                    {fetchError ? (
+                                    <span className="text-red-400 flex items-center gap-1">
+                                        <AlertCircle size={10} /> {fetchError}
+                                    </span>
+                                    ) : (
+                                    <span className="text-slate-400 flex items-center gap-1">
+                                        {STATUS_CSV_URL ? (
+                                            <>
+                                            <CheckCircle2 size={10} className="text-[#7A9089]" /> 資料已同步自雲端
+                                            </>
+                                        ) : "僅顯示範例資料"}
+                                    </span>
+                                    )}
+                                </div>
+                                </div>
+                            </div>
+                            </section>
+                        );
+                    case 'terms':
+                        return (
+                            <section className="py-20 px-6 bg-[#F5F7F8] min-h-screen animate-fade-in-up">
+                            <div className="max-w-3xl mx-auto bg-white/60 backdrop-blur-md rounded-3xl p-8 md:p-12 border border-white mt-10">
+                                <div className="text-center mb-10">
+                                <h2 className="text-lg font-medium tracking-widest text-slate-700">注意事項</h2>
+                                <p className="text-[10px] text-slate-500 mt-2">委託前請務必詳閱以下內容</p>
+                                </div>
+                                
+                                <div className="space-y-8">
+                                {/* 委託流程 */}
+                                <div className="flex gap-4">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 mt-1">
+                                    <ArrowRight size={16} />
+                                    </div>
+                                    <div className="flex-1">
+                                    <h4 className="text-xs font-medium text-slate-700 tracking-wider mb-2">{termsContent.process.title}</h4>
+                                    <div className="text-[11px] text-slate-500 leading-relaxed font-light" dangerouslySetInnerHTML={{ __html: termsContent.process.content }}></div>
+                                    </div>
+                                </div>
+
+                                {/* 急件加價規則 */}
+                                <div className="flex gap-4">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-red-500 mt-1">
+                                    <Zap size={16} />
+                                    </div>
+                                    <div className="flex-1">
+                                    <h4 className="text-xs font-medium text-slate-700 tracking-wider mb-2">{termsContent.rush.title}</h4>
+                                    <div className="text-[11px] text-slate-500 leading-relaxed font-light" dangerouslySetInnerHTML={{ __html: termsContent.rush.content }}></div>
+                                    </div>
+                                </div>
+
+                                {/* 商用委託&買斷 */}
+                                <div className="flex gap-4">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-400 mt-1">
+                                    <Briefcase size={16} />
+                                    </div>
+                                    <div className="flex-1">
+                                    <h4 className="text-xs font-medium text-slate-700 tracking-wider mb-2">{termsContent.commercial.title}</h4>
+                                    <div className="text-[11px] text-slate-500 leading-relaxed font-light" dangerouslySetInnerHTML={{ __html: termsContent.commercial.content }}></div>
+                                    </div>
+                                </div>
+
+                                {/* 模板委託 */}
+                                    <div className="flex gap-4">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-400 mt-1">
+                                    <LayoutTemplate size={16} />
+                                    </div>
+                                    <div className="flex-1">
+                                    <h4 className="text-xs font-medium text-slate-700 tracking-wider mb-2">{termsContent.template.title}</h4>
+                                    <div className="text-[11px] text-slate-500 leading-relaxed font-light" dangerouslySetInnerHTML={{ __html: termsContent.template.content }}></div>
+                                    </div>
+                                </div>
+
+                                {/* 委託提供資料 */}
+                                <div className="flex gap-4">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center text-purple-400 mt-1">
+                                    <ClipboardList size={16} />
+                                    </div>
+                                    <div className="flex-1">
+                                    <h4 className="text-xs font-medium text-slate-700 tracking-wider mb-2">{termsContent.provide.title}</h4>
+                                    <div className="text-[11px] text-slate-500 leading-relaxed font-light" dangerouslySetInnerHTML={{ __html: termsContent.provide.content }}></div>
+                                    </div>
+                                </div>
+                                
+                                </div>
+                            </div>
+                            </section>
+                        );
+                    default:
+                        return null;
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-[#F9F9F9] text-slate-600 font-sans selection:bg-slate-200 selection:text-slate-800">
+                <style>{`
+                    body { font-family: "Helvetica Neue", Arial, "Heiti TC", sans-serif; }
+                    .font-theme { font-weight: 300; letter-spacing: 0.1em; }
+                    .glass-panel { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.8); }
+                    @keyframes scroll {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                    }
+                    @keyframes slideUp {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                    }
+                    @keyframes fadeInUp {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                    }
+                    .animate-slide-up {
+                    animation: slideUp 0.5s ease-out forwards;
+                    }
+                    .animate-fade-in-up {
+                    animation: fadeInUp 0.6s ease-out forwards;
+                    }
+                    .marquee-content { display: flex; animation: scroll 20s linear infinite; }
+                    .hide-scrollbar::-webkit-scrollbar { display: none; }
+                    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                `}</style>
+
+                {/* 導航列 */}
+                <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex justify-center">
+                    <div className="glass-panel rounded-full px-8 py-3 shadow-sm shadow-slate-200/30 flex items-center gap-8 text-xs font-theme text-slate-500 overflow-x-auto max-w-full">
+                    <button 
+                        onClick={() => handleNavClick('home')} 
+                        className={`${activePage === 'home' ? 'text-slate-800 font-medium' : 'hover:text-slate-800'} transition-colors whitespace-nowrap`}
+                    >
+                        主頁
+                    </button>
+                    <button 
+                        onClick={() => handleNavClick('about')} 
+                        className={`${activePage === 'about' ? 'text-slate-800 font-medium' : 'hover:text-slate-800'} transition-colors whitespace-nowrap`}
+                    >
+                        關於
+                    </button>
+                    <button 
+                        onClick={() => handleNavClick('portfolio')} 
+                        className={`${activePage === 'portfolio' ? 'text-slate-800 font-medium' : 'hover:text-slate-800'} transition-colors whitespace-nowrap`}
+                    >
+                        範例
+                    </button>
+                    <span className="text-slate-300 hidden md:flex items-center justify-center">
+                        <Cat size={14} strokeWidth={2} />
+                    </span>
+                    <button 
+                        onClick={() => handleNavClick('pricing')} 
+                        className={`${activePage === 'pricing' ? 'text-slate-800 font-medium' : 'hover:text-slate-800'} transition-colors whitespace-nowrap`}
+                    >
+                        價目
+                    </button>
+                    <button 
+                        onClick={() => handleNavClick('status')} 
+                        className={`${activePage === 'status' ? 'text-slate-800 font-medium' : 'hover:text-slate-800'} transition-colors whitespace-nowrap`}
+                    >
+                        排單
+                    </button>
+                    <button 
+                        onClick={() => handleNavClick('terms')} 
+                        className={`${activePage === 'terms' ? 'text-slate-800 font-medium' : 'hover:text-slate-800'} transition-colors whitespace-nowrap`}
+                    >
+                        須知
+                    </button>
+                    </div>
+                </nav>
+
+                {/* 內容區塊 */}
+                {renderContent()}
+
+                {/* Footer */}
+                <footer className="py-10 px-6 text-center text-[10px] text-slate-400 tracking-widest font-light">
+                    {/* --- 修改頁尾文字的位置 --- */}
+                    © 2026 yulii0400149 Art. .<br/>
+                    Designed with <Heart size={10} className="inline mx-1 text-slate-400" /> by YULII
+                </footer>
+                
+                {/* 除錯訊息顯示 (如果有錯誤) - 新增關閉按鈕 */}
+                {debugLog.length > 0 && (
+                    <div className="fixed bottom-0 left-0 right-0 bg-black/80 text-white text-[10px] p-2 font-mono max-h-32 overflow-y-auto z-50 flex flex-col group">
+                        <button 
+                            onClick={() => setDebugLog([])} 
+                            className="absolute top-2 right-2 text-white/50 hover:text-white"
+                            title="清除日誌"
+                        >
+                            <XCircle size={14} />
+                        </button>
+                        {debugLog.map((log, i) => <div key={i} className="mb-1">{log}</div>)}
+                    </div>
+                )}
+                </div>
+            );
+        }
+
+        // 渲染應用程式
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<ArtistPortfolio />);
+    </script>
+</body>
+</html>
