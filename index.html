@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -223,7 +224,7 @@
                         colorTone: 'blue' 
                     },
                     { 
-                        title: '正比半身', 
+                        title: '平塗色塊插圖', 
                         urls: [
                             "https://images.plurk.com/2x5FoWpwpweO5nDTxT5fPF.jpg",
                             "https://images.plurk.com/1FOXbYYul1sIE7OOGXVMMg.jpg",
@@ -239,7 +240,7 @@
                         heightClass: "h-[282px]"
                     },
                     { 
-                        title: '半身插圖', 
+                        title: '日系上色插圖', 
                         urls: [], 
                         count: 4, 
                         colorTone: 'indigo',
@@ -371,6 +372,79 @@
             }
         ];
 
+        // 價目表資料 (改為初始變數，以供狀態管理與更新)
+        const INITIAL_PRICE_LIST = [
+            {
+                category: "正比系列",
+                targetId: 'normal', 
+                theme: {
+                    bg: "bg-[#F0F4F8]", 
+                    borderHover: "hover:border-blue-200",
+                    icon: "text-blue-300 group-hover:text-blue-500",
+                    highlight: "group-hover:text-blue-500"
+                },
+                items: [
+                    { title: "正比頭貼", price: "NT. 800+", desc: "精緻全彩 / 含簡易背景裝飾 / 可加價繪製物件", tags: ["頭貼", "精緻"] },
+                    { title: "平塗色塊插圖", price: "NT. 3000+", desc: "範圍腰部以上 / 動作可指定 / 背景另外加價", tags: ["插圖", "多物件"] },
+                    { title: "日系上色插圖", price: "NT. 3000+", desc: "包含精緻背景 / 完整構圖 / 氛圍感強烈", tags: ["插圖", "背景"] },
+                    { title: "全身立繪", price: "NT. 3000+", desc: "可加價角色設計、排版表情差分 / 完整細節", tags: ["立繪", "設計"] },
+                ]
+            },
+            {
+                category: "Ｑ版系列",
+                targetId: 'chibi', 
+                theme: {
+                    bg: "bg-[#F9F6F7]", 
+                    borderHover: "hover:border-rose-200",
+                    icon: "text-rose-300 group-hover:text-rose-500",
+                    highlight: "group-hover:text-rose-500"
+                },
+                items: [
+                    { title: "Ｑ版頭貼", price: "NT. 600+", desc: "默認日系一單上色，平塗色塊上色需加價 / 可加價繪製多物件", tags: ["可愛", "大頭"] },
+                    { title: "Ｑ版全身", price: "NT. 800+", desc: "可製作飯友 / 可配合大物件&動物等", tags: ["全身", "周邊印製最佳選"] }, // 還原
+                    { title: "Ｑ版插圖", price: "NT. 1500+", desc: "包含光影背景 / 氛圍感", tags: ["插圖", "豐富"] },
+                    { title: "服裝設計", price: "NT. 1500+", desc: "指定主題設計 / 含服裝配件", tags: ["拆分", "換裝娃娃"] }, // 還原
+                ]
+            },
+            {
+                category: "其他項目",
+                targetId: 'other', 
+                theme: {
+                    bg: "bg-[#F2F7F5]", 
+                    borderHover: "hover:border-emerald-200",
+                    icon: "text-emerald-300 group-hover:text-emerald-600",
+                    highlight: "group-hover:text-emerald-600"
+                },
+                items: [
+                    { title: "簡單線條", price: "NT. 300+", desc: "單色線條 / 簡單上色", tags: ["極簡", "可作線稿"] }, // 還原
+                    { title: "黑白塗鴉", price: "NT. 800+", desc: "正比隨筆 / 線條感", tags: ["塗鴉", "上色+100"] }, // 還原
+                    { title: "貼圖", price: "NT. 2800+", desc: "靜態貼圖 / 一組 8 張", tags: ["少量張數私訊報價"] }, // 還原
+                    { title: "客製化周邊印製", price: "私訊詢問詳細報價", desc: "少量製作 / 特殊工藝 / 一條龍服務", tags: ["周邊", "印製"] },
+                ]
+            },
+            // 模板委託
+            {
+                category: "模板委託",
+                targetId: 'template',
+                theme: {
+                    bg: "bg-[#F7F7F9]", 
+                    borderHover: "hover:border-slate-200",
+                    icon: "text-slate-300 group-hover:text-slate-500",
+                    highlight: "group-hover:text-slate-500"
+                },
+                items: [
+                    { 
+                        title: "當期模板", 
+                        price: "依模板定價", 
+                        desc: "點擊下方按鈕查看當期開放模板詳情，不定期掉落", 
+                        tags: ["限定", "模板"],
+                        hasLink: true,
+                        isTemplate: true 
+                    }
+                ]
+            }
+        ];
+
         // ★★★ 智慧型圖片元件：自動偵測尺寸與影片 ★★★
         const SmartArtItem = ({ color, text, subText, imageUrl, heightClass = "h-48" }) => {
             const [isWide, setIsWide] = useState(false);
@@ -496,80 +570,6 @@
             );
         };
 
-        // 價目表資料 (已還原您的文字內容)
-        const priceList = [
-            {
-                category: "正比系列",
-                targetId: 'normal', 
-                theme: {
-                    bg: "bg-[#F0F4F8]", 
-                    borderHover: "hover:border-blue-200",
-                    icon: "text-blue-300 group-hover:text-blue-500",
-                    highlight: "group-hover:text-blue-500"
-                },
-                items: [
-                    { title: "正比頭貼", price: "NT. 800+", desc: "精緻全彩 / 含簡易背景裝飾 / 可加價繪製物件", tags: ["頭貼", "精緻"] },
-                    // --- 修改：更新正比半身價格 ---
-                    { title: "正比半身", price: "NT. 2500+", desc: "範圍腰部以上 / 動作可指定 / 背景另外加價", tags: ["插圖", "多物件"] },
-                    { title: "半身插圖", price: "NT. 3000+", desc: "包含精緻背景 / 完整構圖 / 氛圍感強烈", tags: ["插圖", "背景"] },
-                    { title: "全身立繪", price: "NT. 3000+", desc: "可加價角色設計、排版表情差分 / 完整細節", tags: ["立繪", "設計"] },
-                ]
-            },
-            {
-                category: "Ｑ版系列",
-                targetId: 'chibi', 
-                theme: {
-                    bg: "bg-[#F9F6F7]", 
-                    borderHover: "hover:border-rose-200",
-                    icon: "text-rose-300 group-hover:text-rose-500",
-                    highlight: "group-hover:text-rose-500"
-                },
-                items: [
-                    { title: "Ｑ版頭貼", price: "NT. 600+", desc: "可愛簡約大頭 / 可加價繪製多物件", tags: ["可愛", "大頭"] },
-                    { title: "Ｑ版全身", price: "NT. 800+", desc: "可製作飯友 / 可配合大物件&動物等", tags: ["全身", "周邊印製最佳選"] }, // 還原
-                    { title: "Ｑ版插圖", price: "NT. 1500+", desc: "包含光影背景 / 氛圍感", tags: ["插圖", "豐富"] },
-                    { title: "服裝設計", price: "NT. 1500+", desc: "指定主題設計 / 含服裝配件", tags: ["拆分", "換裝娃娃"] }, // 還原
-                ]
-            },
-            {
-                category: "其他項目",
-                targetId: 'other', 
-                theme: {
-                    bg: "bg-[#F2F7F5]", 
-                    borderHover: "hover:border-emerald-200",
-                    icon: "text-emerald-300 group-hover:text-emerald-600",
-                    highlight: "group-hover:text-emerald-600"
-                },
-                items: [
-                    { title: "簡單線條", price: "NT. 300+", desc: "單色線條 / 簡單上色", tags: ["極簡", "可作線稿"] }, // 還原
-                    { title: "黑白塗鴉", price: "NT. 800+", desc: "正比隨筆 / 線條感", tags: ["塗鴉", "上色+100"] }, // 還原
-                    { title: "貼圖", price: "NT. 2800+", desc: "靜態貼圖 / 一組 8 張", tags: ["少量張數私訊報價"] }, // 還原
-                    { title: "客製化周邊印製", price: "私訊詢問詳細報價", desc: "少量製作 / 特殊工藝 / 一條龍服務", tags: ["周邊", "印製"] },
-                ]
-            },
-            // 模板委託
-            {
-                category: "模板委託",
-                targetId: 'template',
-                theme: {
-                    bg: "bg-[#F7F7F9]", 
-                    borderHover: "hover:border-slate-200",
-                    icon: "text-slate-300 group-hover:text-slate-500",
-                    highlight: "group-hover:text-slate-500"
-                },
-                items: [
-                    { 
-                        title: "當期模板", 
-                        price: "依模板定價", 
-                        desc: "點擊下方按鈕查看當期開放模板詳情，不定期掉落", 
-                        tags: ["限定", "模板"],
-                        hasLink: true,
-                        isTemplate: true 
-                    }
-                ]
-            }
-        ];
-
         const getColorClass = (tone, index) => {
             const intensities = [100, 200, 50, 300, 100, 200];
             const intensity = intensities[index % intensities.length];
@@ -674,6 +674,7 @@
             const [debugLog, setDebugLog] = useState([]);
             const [activePortfolioTab, setActivePortfolioTab] = useState('normal');
             const [activePriceTab, setActivePriceTab] = useState(0);
+            const [pricesData, setPricesData] = useState(INITIAL_PRICE_LIST);
             const [currentSchedule, setCurrentSchedule] = useState("1月中");
             const [termsContent, setTermsContent] = useState(DEFAULT_TERMS);
             const [templateLinks, setTemplateLinks] = useState([]); 
@@ -742,17 +743,30 @@
                     const text = await fetchDataFromCSV(PORTFOLIO_CSV_URL);
                     const rows = parseCSV(text);
                     const newPortfolioData = JSON.parse(JSON.stringify(INITIAL_CATEGORIES));
+                    const newPricesData = JSON.parse(JSON.stringify(INITIAL_PRICE_LIST));
                     newPortfolioData.forEach(cat => cat.items.forEach(item => item.urls = []));
 
                     let newMarqueeImages = [];
                     let successCount = 0;
+                    let priceUpdateCount = 0;
                     
                     const categoryMap = {
                         'normal': 'normal', '正比': 'normal', '正比系列': 'normal',
                         'chibi': 'chibi', 'q版': 'chibi', 'Ｑ版': 'chibi', 'q版系列': 'chibi', 'Ｑ版系列': 'chibi',
                         'other': 'other', '其他': 'other', '其他項目': 'other',
                         'template': 'template', '模板': 'template', '模板委託': 'template',
-                        'marquee': 'marquee', '跑馬燈': 'marquee', '主視覺': 'marquee', '主頁': 'marquee', 'hero': 'marquee'
+                        'marquee': 'marquee', '跑馬燈': 'marquee', '主視覺': 'marquee', '主頁': 'marquee', 'hero': 'marquee',
+                        'price': 'price', '價格': 'price', '價錢': 'price', '價目': 'price', '價目表': 'price'
+                    };
+
+                    // 加入名稱相容機制，讓表單填舊名也能對應到新標題
+                    const getCleanAliases = (title) => {
+                        const map = {
+                            '平塗色塊插圖': ['平塗色塊插圖', '正比半身'],
+                            '日系上色插圖': ['日系上色插圖', '半身插圖']
+                        };
+                        const aliases = map[title] || [title];
+                        return aliases.map(a => a.replace(/[\s\-]/g, '').toLowerCase());
                     };
 
                     let startIndex = 0;
@@ -771,26 +785,48 @@
                         const categoryId = categoryMap[rawCat] || rawCat;
                         const itemTitle = cleanCSVValue(cols[1]);
                         const imageUrlRaw = cleanCSVValue(cols.slice(2).join(' '));
+                        const col2Raw = cleanCSVValue(cols[2]); // 專門抓取 C 欄內容
 
-                        if (!categoryId || !imageUrlRaw) continue;
+                        if (!categoryId) continue;
 
-                        const urls = imageUrlRaw.split(/[\s,\n]+/).filter(url => url.length > 5 && url.startsWith('http'));
-                        
                         if (categoryId === 'marquee') {
+                            const urls = imageUrlRaw.split(/[\s,\n]+/).filter(url => url.length > 5 && url.startsWith('http'));
                             if (urls.length > 0) {
                                 newMarqueeImages.push(...urls);
                             }
                             continue; 
                         }
 
+                        // 獨立的價格更新邏輯
+                        if (categoryId === 'price') {
+                            const targetTitleClean = itemTitle.replace(/[\s\-]/g, '').toLowerCase();
+                            let found = false;
+                            newPricesData.forEach(cat => {
+                                cat.items.forEach(item => {
+                                    const aliases = getCleanAliases(item.title);
+                                    if (aliases.some(alias => alias === targetTitleClean || targetTitleClean.includes(alias) || alias.includes(targetTitleClean))) {
+                                        if (col2Raw) {
+                                            item.price = col2Raw;
+                                            priceUpdateCount++;
+                                            found = true;
+                                        }
+                                    }
+                                });
+                            });
+                            if (!found && itemTitle) addDebugLog(`⚠️ 找不到價格項目: "${itemTitle}"`);
+                            continue;
+                        }
+
                         if (!itemTitle) continue;
+
+                        const urls = imageUrlRaw.split(/[\s,\n]+/).filter(url => url.length > 5 && url.startsWith('http'));
 
                         const category = newPortfolioData.find(c => c.id.toLowerCase() === categoryId);
                         if (category) {
-                            const targetTitleClean = itemTitle.replace(/\s+/g, '').toLowerCase();
+                            const targetTitleClean = itemTitle.replace(/[\s\-]/g, '').toLowerCase();
                             const item = category.items.find(itm => {
-                                const sourceTitleClean = itm.title.replace(/\s+/g, '').toLowerCase();
-                                return sourceTitleClean === targetTitleClean || sourceTitleClean.includes(targetTitleClean);
+                                const aliases = getCleanAliases(itm.title);
+                                return aliases.some(alias => alias === targetTitleClean || targetTitleClean.includes(alias) || alias.includes(targetTitleClean));
                             });
 
                             if (!item && categoryId === 'template') {
@@ -807,25 +843,29 @@
                                         successCount++;
                                     }
                                 } else {
-                                    if (i < 5) addDebugLog(`找不到項目: "${itemTitle}"`);
+                                    if (i < 5) addDebugLog(`⚠️ 找不到範例項目: "${itemTitle}"`);
                                 }
                             } else {
-                                if (i < 5) addDebugLog(`找不到分類: "${rawCat}"`);
+                                if (i < 5) addDebugLog(`⚠️ 找不到分類: "${rawCat}"`);
                             }
                         }
 
+                        // 將價格更新與圖片更新分離，確保價格隨時都能獨立同步
+                        if (priceUpdateCount > 0) {
+                            setPricesData(newPricesData);
+                            addDebugLog(`✅ 成功更新 ${priceUpdateCount} 筆雲端價格`);
+                        }
+                        
                         if (successCount > 0 || newMarqueeImages.length > 0) {
                             setPortfolioData(newPortfolioData);
                             setMarqueeImages(newMarqueeImages); 
-                            addDebugLog(`成功載入圖片 (範例: ${successCount}, 跑馬燈: ${newMarqueeImages.length})`);
+                            addDebugLog(`✅ 成功載入圖片 (範例: ${successCount}, 跑馬燈: ${newMarqueeImages.length})`);
                             
                             const templateCat = newPortfolioData.find(c => c.id === 'template');
                             if (templateCat && templateCat.items.length > 1) {
                                 templateCat.items = templateCat.items.filter(i => i.title !== '當期模板' || i.urls.length > 0);
                             }
 
-                        } else {
-                            addDebugLog("讀取成功但無效資料。請檢查試算表內容");
                         }
 
                     } catch (error) {
@@ -1168,7 +1208,7 @@
                                         }}
                                     ></div>
 
-                                    {priceList.map((category, index) => (
+                                    {pricesData.map((category, index) => (
                                     <button
                                         key={index}
                                         onClick={() => setActivePriceTab(index)}
@@ -1188,7 +1228,7 @@
 
                             <div className="min-h-[400px]">
                                 {(() => {
-                                const category = priceList[activePriceTab];
+                                const category = pricesData[activePriceTab];
                                 const catIndex = activePriceTab;
                                 
                                 let displayItems = category.items;
