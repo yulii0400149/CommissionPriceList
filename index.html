@@ -1,9 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 解決部分圖床 (如 Plurk, Imgur) 阻擋外部網站載入圖片的問題 -->
+    <meta name="referrer" content="no-referrer" />
     
     <!-- 網站標題 -->
     <title>早上起不來（由里） | 繪圖委託</title>
@@ -634,11 +635,12 @@
             const separator = url.includes('?') ? '&' : '?';
             const urlWithTimestamp = `${url}${separator}_t=${timestamp}`;
             
+            // 優先使用直接連線（Google Sheets 原生支援 CORS），若失敗才使用 Proxy 備援
             const proxies = [
+                urlWithTimestamp, 
                 `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(urlWithTimestamp)}`,
                 `https://corsproxy.io/?${encodeURIComponent(urlWithTimestamp)}`,
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(urlWithTimestamp)}`,
-                urlWithTimestamp 
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(urlWithTimestamp)}`
             ];
 
             for (const proxyUrl of proxies) {
@@ -781,8 +783,13 @@
 
                         if (!categoryId) continue;
 
+                        // 更強健的網址擷取方式：使用正規表達式精準抓出所有 http/https 網址，避免格式錯誤
+                        const extractUrls = (text) => {
+                            return text.match(/https?:\/\/[^\s<>"]+/g) || [];
+                        };
+
                         if (categoryId === 'marquee') {
-                            const urls = imageUrlRaw.split(/[\s,\n]+/).filter(url => url.length > 5 && url.startsWith('http'));
+                            const urls = extractUrls(imageUrlRaw);
                             if (urls.length > 0) {
                                 newMarqueeImages.push(...urls);
                             }
@@ -810,7 +817,7 @@
 
                         if (!itemTitle) continue;
 
-                        const urls = imageUrlRaw.split(/[\s,\n]+/).filter(url => url.length > 5 && url.startsWith('http'));
+                        const urls = extractUrls(imageUrlRaw);
 
                         const category = newPortfolioData.find(c => c.id.toLowerCase() === categoryId);
                         if (category) {
