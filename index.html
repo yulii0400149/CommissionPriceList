@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 解決部分圖床 (如 Plurk, Imgur) 阻擋外部網站載入圖片的問題 -->
     <meta name="referrer" content="no-referrer" />
     
     <!-- 網站標題 -->
@@ -35,18 +34,9 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- ★★★ 關鍵修復：鎖定使用穩定的 Babel 版本 7.26.4，避免最新版的災情 ★★★ -->
+    <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
 
-    <!-- ★★★ 關鍵修復：強制 Babel 使用 Classic Runtime，防止自動產生 import 語句 ★★★ -->
-    <script>
-        Babel.registerPreset('react-classic', {
-            presets: [
-                [Babel.availablePresets['react'], { runtime: 'classic' }]
-            ]
-        });
-    </script>
-    
     <style>
         /* 避免頁面載入時的閃爍 */
         body { opacity: 0; animation: fadeIn 0.5s forwards; }
@@ -59,8 +49,7 @@
 <body class="bg-[#F9F9F9]">
     <div id="root"></div>
 
-    <!-- 指定使用剛剛註冊的 react-classic preset -->
-    <script type="text/babel" data-presets="react-classic">
+    <script type="text/babel">
         // --- 全域變數解構 ---
         const { useState, useEffect, useCallback, useRef } = React;
 
@@ -103,7 +92,7 @@
             Smile: (p) => <IconBase {...p}><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></IconBase>,
             PenTool: (p) => <IconBase {...p}><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></IconBase>,
             ChevronRight: (p) => <IconBase {...p}><path d="m9 18 6-6-6-6"/></IconBase>,
-            Donut: (p) => <IconBase {...p}><path d="M20.5 10a2.5 2.5 0 0 1-2.4-3H18a2.95 2.95 0 0 1-2.6-4.4 10 10 0 1 0 6.3 7.1c-.3.2-.8.3-1.2.3"/><path d="M16 13a4 4 0 1 1-4-4"/></IconBase>,
+            Donut: (p) => <IconBase {...p}><path d="M20.5 10a2.5 2.5 0 0 1-2.4-3H18a2.95 2.95 0 0 1-2.6-4.4 10 10 0 1 0 6.3 7.1c-.3.2-.8.3-1.2.3"/><path d="M16 13a4 4 0 1 1-4-4"/></IconBase>, // 使用甜甜圈/圓形路徑模擬
             XCircle: (p) => <IconBase {...p}><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></IconBase>,
             Cat: (p) => <IconBase {...p}><path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58-.42 7-.42 7 .57 1.07 1 2.24 1 3.44C21 17.9 16.97 21 12 21s-9-3.1-9-7.56c0-1.25.5-2.4 1-3.44 0 0-1.89-6.42-.5-7 1.39-.58 4.72.23 6.5 2.23A9.04 9.04 0 0 1 12 5Z"/><path d="M8 14v.5"/><path d="M16 14v.5"/><path d="M11.25 16.25h1.5"/></IconBase>,
             Play: (p) => <IconBase {...p}><polygon points="5 3 19 12 5 21 5 3"/></IconBase>,
@@ -139,7 +128,9 @@
                     strokeLinejoin="round"
                     className={className}
                 >
+                    {/* 豎線 */}
                     <path d="M6 4v16" />
+                    {/* 半圓圈 */}
                     <path d="M6 4h6a6 6 0 0 1 0 12h-6" />
                 </svg>
             );
@@ -169,7 +160,7 @@
         // --- ★★★ 設定區：社群連結 (在此統一管理) ★★★ ---
         const SOCIAL_URLS = {
             facebook: "https://www.facebook.com/Yulii0400149",
-            threads: "https://www.threads.net/@YOUR_ID", 
+            threads: "https://www.threads.com/@yulii0400149", 
             plurk: "https://www.plurk.com/Yulii0400149",
             mail: "mailto:yulii0400149@gmail.com"
         };
@@ -316,17 +307,6 @@
                         count: 4, 
                         colorTone: 'pink',
                         widthClass: "min-w-[288px] w-[260px]" 
-                    },
-                    { 
-                        title: '服裝設計', 
-                        urls: [
-                            "https://images.plurk.com/6HartYiK9jAXXeTpTExTsz.jpg",
-                            "https://images.plurk.com/72FZTwMGCWz1FMm802P3xM.jpg",
-                            "https://images.plurk.com/7ba4OPL8bFYC7g8wSQwBlZ.jpg"
-                        ], 
-                        count: 3, 
-                        colorTone: 'indigo',
-                        widthClass: "min-w-[220px] w-[220px]" 
                     }
                 ] 
             },
@@ -334,24 +314,6 @@
                 id: 'other', 
                 name: '其他', 
                 items: [
-                    { 
-                        title: '簡單線條', 
-                        urls: [], 
-                        count: 5, 
-                        colorTone: 'gray',
-                        heightClass: "h-[282px]" 
-                    },
-                    { 
-                        title: '黑白塗鴉', 
-                        urls: [
-                            "https://images.plurk.com/4L4tnNaehQODD4p8avtPxc.jpg",
-                            "https://images.plurk.com/6Hb1fOuh7BrpIrXrw0jYl1.jpg",
-                            "https://images.plurk.com/3UqRaIDahvGzHAjS2rqzO9.jpg",
-                        ], 
-                        count: 3, 
-                        colorTone: 'stone',
-                        heightClass: "h-[282px]" 
-                    },
                     { 
                         title: 'LINE貼圖', 
                         urls: [], 
@@ -411,7 +373,6 @@
                     { title: "Ｑ版頭貼", price: "NT. 600+", desc: "默認日系一單上色，平塗色塊上色需加價 / 可加價繪製多物件", tags: ["可愛", "大頭"] },
                     { title: "Ｑ版全身", price: "NT. 800+", desc: "可製作飯友 / 可配合大物件&動物等", tags: ["全身", "周邊印製最佳選"] }, 
                     { title: "Ｑ版插圖", price: "NT. 1500+", desc: "包含光影背景 / 氛圍感", tags: ["插圖", "豐富"] },
-                    { title: "服裝設計", price: "NT. 1500+", desc: "指定主題設計 / 含服裝配件", tags: ["拆分", "換裝娃娃"] }, 
                 ]
             },
             {
@@ -424,10 +385,15 @@
                     highlight: "group-hover:text-emerald-600"
                 },
                 items: [
-                    { title: "簡單線條", price: "NT. 300+", desc: "單色線條 / 簡單上色", tags: ["極簡", "可作線稿"] }, 
-                    { title: "黑白塗鴉", price: "NT. 800+", desc: "正比隨筆 / 線條感", tags: ["塗鴉", "上色+100"] }, 
                     { title: "貼圖", price: "NT. 2800+", desc: "靜態貼圖 / 一組 8 張", tags: ["少量張數私訊報價"] }, 
-                    { title: "客製化周邊印製", price: "私訊詢問詳細報價", desc: "少量製作 / 特殊工藝 / 一條龍服務", tags: ["周邊", "印製"] },
+                    { 
+                        title: "客製化周邊印製", 
+                        price: "私訊詢問詳細報價", 
+                        desc: "少量製作 / 特殊工藝 / 一條龍服務", 
+                        tags: ["周邊", "印製"],
+                        hasLink: true,
+                        linkUrl: "https://docs.google.com/spreadsheets/d/1hbwvBD_Sq8O64_z4EsYtqz0-UkqlORasuxXqFRpsaLw/edit?usp=sharing"
+                    },
                 ]
             },
             {
@@ -636,7 +602,6 @@
             const separator = url.includes('?') ? '&' : '?';
             const urlWithTimestamp = `${url}${separator}_t=${timestamp}`;
             
-            // 優先使用直接連線（Google Sheets 原生支援 CORS），若失敗才使用 Proxy 備援
             const proxies = [
                 urlWithTimestamp, 
                 `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(urlWithTimestamp)}`,
@@ -674,6 +639,12 @@
             const [currentSchedule, setCurrentSchedule] = useState("1月中");
             const [termsContent, setTermsContent] = useState(DEFAULT_TERMS);
             const [templateLinks, setTemplateLinks] = useState([]); 
+
+            // === 新增：價目與上色說明視窗狀態 ===
+            const [showPriceGuide, setShowPriceGuide] = useState(false);
+            const [guidePage, setGuidePage] = useState(1);
+            const [hasShownGuide, setHasShownGuide] = useState(false);
+            const [guideImages, setGuideImages] = useState({ flat: [], anime: [], simple: [], normal: [], complex: [] });
 
             const addDebugLog = (msg) => {
                 console.log(msg);
@@ -745,6 +716,7 @@
                     let newMarqueeImages = [];
                     let successCount = 0;
                     let priceUpdateCount = 0;
+                    let newGuideImages = { flat: [], anime: [], simple: [], normal: [], complex: [] };
                     
                     const categoryMap = {
                         'normal': 'normal', '正比': 'normal', '正比系列': 'normal',
@@ -782,12 +754,25 @@
                         const imageUrlRaw = cleanCSVValue(cols.slice(2).join(' '));
                         const col2Raw = cleanCSVValue(cols[2]); 
 
-                        if (!categoryId) continue;
+                        if (!categoryId && !rawCat.includes('說明') && !rawCat.includes('指南')) continue;
 
-                        // 更強健的網址擷取方式：使用正規表達式精準抓出所有 http/https 網址，避免格式錯誤
                         const extractUrls = (text) => {
                             return text.match(/https?:\/\/[^\s<>"]+/g) || [];
                         };
+
+                        // === 新增：解析說明視窗的圖片 ===
+                        if (rawCat.includes('說明') || rawCat.includes('指南') || categoryId === 'guide') {
+                            const urls = extractUrls(imageUrlRaw);
+                            const titleClean = itemTitle.replace(/[\s\-]/g, '');
+                            
+                            // 修正：改用 else if 精確配對，避免「複雜度一般」同時觸發「複雜」
+                            if (titleClean.includes('平塗')) newGuideImages.flat.push(...urls);
+                            else if (titleClean.includes('日系')) newGuideImages.anime.push(...urls);
+                            else if (titleClean.includes('簡單')) newGuideImages.simple.push(...urls);
+                            else if (titleClean.includes('一般') || titleClean.includes('中等')) newGuideImages.normal.push(...urls);
+                            else if (titleClean.includes('複雜')) newGuideImages.complex.push(...urls);
+                            continue;
+                        }
 
                         if (categoryId === 'marquee') {
                             const urls = extractUrls(imageUrlRaw);
@@ -854,6 +839,9 @@
                             addDebugLog(`✅ 成功更新 ${priceUpdateCount} 筆雲端價格`);
                         }
                         
+                        // === 新增：設定說明視窗的圖片 ===
+                        setGuideImages(newGuideImages);
+
                         if (successCount > 0 || newMarqueeImages.length > 0) {
                             setPortfolioData(newPortfolioData);
                             setMarqueeImages(newMarqueeImages); 
@@ -909,6 +897,14 @@
                 fetchPortfolio();
                 fetchTerms();
             }, [fetchStatus, fetchPortfolio, fetchTerms]);
+
+            // 自動跳出說明視窗 (僅在第一次點開價目表時跳出)
+            useEffect(() => {
+                if (activePage === 'pricing' && !hasShownGuide) {
+                    setShowPriceGuide(true);
+                    setHasShownGuide(true);
+                }
+            }, [activePage, hasShownGuide]);
 
             const scrollTo = (id) => {
                 const element = document.getElementById(id);
@@ -1029,14 +1025,18 @@
                                     </div>
                                 </div>
                                 <h2 className="text-xl font-bold tracking-[0.2em] text-slate-700 mb-2">夏由里</h2>
-                                <p className="text-sm text-slate-600 tracking-widest font-light mb-8 leading-7">
+                                <p className="text-sm text-slate-600 tracking-widest font-light leading-7">
                                 視覺傳達設計系畢業<br/>
                                 喜歡甜點、貓咪與回籠覺。<br/>
                                 小孩子外表的阿姨，<br/>
                                 再拆一層會發現裡面還是屁孩
                                 </p>
                                 
-                                <div className="flex justify-center gap-6 mt-8">
+                                <div className="mt-6 mb-8 px-5 py-3 bg-slate-50 text-slate-500 text-xs rounded-2xl tracking-wider leading-relaxed border border-slate-100 text-left md:text-center mx-auto w-fit shadow-sm">
+                                    目前人在日本打工渡假，半天訊息沒回就是在忙，兩天沒回應再敲我，一直敲我會變木魚，還可能被超渡
+                                </div>
+                                
+                                <div className="flex justify-center gap-6 mt-2">
                                     <a 
                                     href={SOCIAL_URLS.facebook}
                                     target="_blank" 
@@ -1175,9 +1175,17 @@
                         return (
                             <section className="py-20 px-6 max-w-5xl mx-auto bg-white min-h-screen animate-fade-in-up">
                             <div className="pt-10 flex flex-col items-center gap-3 mb-12 justify-center">
+                                {/* --- 修改：加深並放大價目表標題 --- */}
                                 <h2 className="text-xl font-medium tracking-widest text-slate-800">委託項目</h2>
+                                
+                                <button 
+                                    onClick={() => { setShowPriceGuide(true); setGuidePage(1); }}
+                                    className="mt-2 px-5 py-2 bg-slate-800 text-white rounded-full text-xs hover:bg-slate-700 transition shadow-md shadow-slate-200 flex items-center gap-2"
+                                >
+                                    <FileText size={14} /> 觀看上色與複雜度說明
+                                </button>
                             
-                                <div className="relative flex p-1 bg-slate-100 rounded-full w-fit">
+                                <div className="relative flex p-1 bg-slate-100 rounded-full w-fit mt-4">
                                     <div 
                                         className="absolute top-1 bottom-1 bg-white rounded-full shadow-sm transition-all duration-300 ease-out"
                                         style={{ 
@@ -1532,6 +1540,115 @@
 
                 {/* 內容區塊 */}
                 {renderContent()}
+
+                {/* === 新增：價目與上色說明視窗 (Modal) === */}
+                {showPriceGuide && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
+                        <div className="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto relative shadow-2xl hide-scrollbar flex flex-col">
+                            {/* Header */}
+                            <div className="sticky top-0 bg-white/90 backdrop-blur z-10 px-4 sm:px-6 py-4 border-b border-slate-100 flex justify-between items-center gap-2">
+                                <h3 className="text-base sm:text-lg font-bold text-slate-800 tracking-widest flex items-center gap-2">
+                                    <Palette size={18} className="text-blue-500 flex-shrink-0" />
+                                    <span className="hidden sm:inline">{guidePage === 1 ? "上色方式差異" : "複雜度與加價說明"}</span>
+                                </h3>
+                                <div className="flex items-center gap-2 sm:gap-3">
+                                    {guidePage === 1 ? (
+                                        <button onClick={() => setGuidePage(2)} className="px-3 sm:px-4 py-1.5 sm:py-2 bg-slate-800 text-white text-[10px] sm:text-xs rounded-full hover:bg-slate-700 transition flex items-center gap-1 sm:gap-2 tracking-widest shadow-sm">
+                                            下一頁 <ArrowRight size={12}/>
+                                        </button>
+                                    ) : (
+                                        <button onClick={() => setGuidePage(1)} className="px-3 sm:px-4 py-1.5 sm:py-2 text-slate-600 text-[10px] sm:text-xs rounded-full hover:bg-slate-100 border border-slate-200 transition tracking-widest font-medium">
+                                            返回
+                                        </button>
+                                    )}
+                                    <button onClick={() => setShowPriceGuide(false)} className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white text-[10px] sm:text-xs rounded-full hover:bg-blue-700 transition tracking-widest shadow-md">
+                                        了解並關閉
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Content */}
+                            <div className="p-6 md:p-8 flex-1">
+                                {guidePage === 1 ? (
+                                    <div className="space-y-6 animate-slide-up">
+                                        <div className="bg-blue-50 border border-blue-100 text-blue-800 text-xs sm:text-sm p-4 rounded-xl leading-relaxed tracking-wider shadow-sm">
+                                            平塗色塊上色方式會加價，根據委託圖大小加價浮動不同，委託私訊時未特別註明一律默認日系上色，只有正比委託和Q版頭貼有上色方式差異。
+                                        </div>
+                                        {/* 平塗 */}
+                                        <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-100">
+                                            <h4 className="text-sm font-bold text-slate-700 mb-2 border-l-4 border-blue-400 pl-3 tracking-widest">平塗色塊插圖</h4>
+                                            <p className="text-[11px] text-slate-500 mb-4 tracking-wider leading-relaxed pl-3">
+                                                推薦配色色系限制2~3種變的服裝為佳，且複雜度不低的角色呈現效果更好，上述<span className="line-through text-slate-400">會噴錢</span>但成圖會好看。
+                                            </p>
+                                            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                                                {guideImages.flat.length > 0 ? (
+                                                    guideImages.flat.slice(0,2).map((url, i) => (
+                                                        <div key={i} className="aspect-[4/3] sm:aspect-square bg-slate-200 rounded-xl overflow-hidden shadow-sm">
+                                                            <img src={url} className="w-full h-full object-cover hover:scale-105 transition duration-500" alt="平塗範例" />
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <><div className="aspect-[4/3] sm:aspect-square bg-white border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 text-center p-1">待新增：<br/>平塗範例 1</div><div className="aspect-[4/3] sm:aspect-square bg-white border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 text-center p-1">待新增：<br/>平塗範例 2</div></>
+                                                )}
+                                            </div>
+                                        </div>
+                                        {/* 日系 */}
+                                        <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-100">
+                                            <h4 className="text-sm font-bold text-slate-700 mb-2 border-l-4 border-indigo-400 pl-3 tracking-widest">日系上色插圖</h4>
+                                            <p className="text-[11px] text-slate-500 mb-4 tracking-wider leading-relaxed pl-3">
+                                                可能會有光影變化
+                                            </p>
+                                            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                                                {guideImages.anime.length > 0 ? (
+                                                    guideImages.anime.slice(0,2).map((url, i) => (
+                                                        <div key={i} className="aspect-[4/3] sm:aspect-square bg-slate-200 rounded-xl overflow-hidden shadow-sm">
+                                                            <img src={url} className="w-full h-full object-cover hover:scale-105 transition duration-500" alt="日系範例" />
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <><div className="aspect-[4/3] sm:aspect-square bg-white border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 text-center p-1">待新增：<br/>日系範例 1</div><div className="aspect-[4/3] sm:aspect-square bg-white border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 text-center p-1">待新增：<br/>日系範例 2</div></>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="animate-slide-up space-y-6">
+                                        <div className="bg-amber-50 border border-amber-100 text-amber-800 text-xs sm:text-sm p-4 rounded-xl text-center tracking-widest font-medium shadow-sm leading-relaxed">
+                                            💡 底價為簡單設定的價格，往上增加浮動會越大，物件需另外加價，不指定也可能突然驚喜物件，不能接受自由發揮或需要指定的話請事先提出。
+                                        </div>
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4">
+                                            {/* 簡單 */}
+                                            <div className="flex flex-col items-center bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-center">
+                                                <h4 className="text-sm font-bold text-slate-700 mb-3 tracking-widest">簡單</h4>
+                                                <div className="w-full aspect-[3/4] bg-slate-100 rounded-xl overflow-hidden mb-4">
+                                                    {guideImages.simple[0] ? <img src={guideImages.simple[0]} className="w-full h-full object-cover hover:scale-105 transition duration-500"/> : <div className="w-full h-full border-2 border-dashed border-slate-200 flex items-center justify-center text-xs text-slate-400">簡單範例</div>}
+                                                </div>
+                                                <p className="text-[11px] text-slate-500 tracking-wider leading-relaxed">角色服裝能想像最簡單沒有多裝飾</p>
+                                            </div>
+                                            {/* 一般 */}
+                                            <div className="flex flex-col items-center bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-center">
+                                                <h4 className="text-sm font-bold text-slate-700 mb-3 tracking-widest">一般</h4>
+                                                <div className="w-full aspect-[3/4] bg-slate-100 rounded-xl overflow-hidden mb-4">
+                                                    {guideImages.normal[0] ? <img src={guideImages.normal[0]} className="w-full h-full object-cover hover:scale-105 transition duration-500"/> : <div className="w-full h-full border-2 border-dashed border-slate-200 flex items-center justify-center text-xs text-slate-400">一般範例</div>}
+                                                </div>
+                                                <p className="text-[11px] text-slate-500 tracking-wider leading-relaxed">大部分在這邊，有裝飾蝴蝶結等，不是特殊結構的服飾</p>
+                                            </div>
+                                            {/* 複雜 */}
+                                            <div className="flex flex-col items-center bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-center">
+                                                <h4 className="text-sm font-bold text-slate-700 mb-3 tracking-widest">複雜</h4>
+                                                <div className="w-full aspect-[3/4] bg-slate-100 rounded-xl overflow-hidden mb-4">
+                                                    {guideImages.complex[0] ? <img src={guideImages.complex[0]} className="w-full h-full object-cover hover:scale-105 transition duration-500"/> : <div className="w-full h-full border-2 border-dashed border-slate-200 flex items-center justify-center text-xs text-slate-400">複雜範例</div>}
+                                                </div>
+                                                <p className="text-[11px] text-slate-500 tracking-wider leading-relaxed">特殊結構例如面具、米哈遊（笑死）、大量荷葉邊蕾絲等</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Footer */}
                 <footer className="py-10 px-6 text-center text-[10px] text-slate-400 tracking-widest font-light">
