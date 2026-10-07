@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -356,7 +355,7 @@
                 items: [
                     { title: "正比頭貼", price: "NT. 800+", desc: "精緻全彩 / 含簡易背景裝飾 / 可加價繪製物件", tags: ["頭貼", "精緻"] },
                     { title: "平塗色塊插圖", price: "NT. 3000+", desc: "範圍腰部以上 / 動作可指定 / 背景另外加價", tags: ["插圖", "多物件"] },
-                    { title: "日系上色插圖", price: "NT. 3000+", desc: "包含精緻背景 / 完整構圖 / 氛圍感強烈", tags: ["插圖", "背景"] },
+                    { title: "日系上色插圖", price: "NT. 3000+", desc: "背景需加價 / 完整構圖 / 不接太複雜背景", tags: ["插圖", "背景"] },
                     { title: "全身立繪", price: "NT. 3000+", desc: "可加價角色設計、排版表情差分 / 完整細節", tags: ["立繪", "設計"] },
                 ]
             },
@@ -372,7 +371,7 @@
                 items: [
                     { title: "Ｑ版頭貼", price: "NT. 600+", desc: "默認日系一單上色，平塗色塊上色需加價 / 可加價繪製多物件", tags: ["可愛", "大頭"] },
                     { title: "Ｑ版全身", price: "NT. 800+", desc: "可製作飯友 / 可配合大物件&動物等", tags: ["全身", "周邊印製最佳選"] }, 
-                    { title: "Ｑ版插圖", price: "NT. 1500+", desc: "包含光影背景 / 氛圍感", tags: ["插圖", "豐富"] },
+                    { title: "Ｑ版插圖", price: "NT. 1500+", desc: "包含光影背景 / 氛圍感", tags: ["插圖", "豐富"] }
                 ]
             },
             {
@@ -640,7 +639,7 @@
             const [termsContent, setTermsContent] = useState(DEFAULT_TERMS);
             const [templateLinks, setTemplateLinks] = useState([]); 
 
-            // === 新增：價目與上色說明視窗狀態 ===
+            // === 價目與上色說明視窗狀態 ===
             const [showPriceGuide, setShowPriceGuide] = useState(false);
             const [guidePage, setGuidePage] = useState(1);
             const [hasShownGuide, setHasShownGuide] = useState(false);
@@ -760,12 +759,11 @@
                             return text.match(/https?:\/\/[^\s<>"]+/g) || [];
                         };
 
-                        // === 新增：解析說明視窗的圖片 ===
+                        // 說明視窗圖片擷取
                         if (rawCat.includes('說明') || rawCat.includes('指南') || categoryId === 'guide') {
                             const urls = extractUrls(imageUrlRaw);
                             const titleClean = itemTitle.replace(/[\s\-]/g, '');
                             
-                            // 修正：改用 else if 精確配對，避免「複雜度一般」同時觸發「複雜」
                             if (titleClean.includes('平塗')) newGuideImages.flat.push(...urls);
                             else if (titleClean.includes('日系')) newGuideImages.anime.push(...urls);
                             else if (titleClean.includes('簡單')) newGuideImages.simple.push(...urls);
@@ -839,7 +837,6 @@
                             addDebugLog(`✅ 成功更新 ${priceUpdateCount} 筆雲端價格`);
                         }
                         
-                        // === 新增：設定說明視窗的圖片 ===
                         setGuideImages(newGuideImages);
 
                         if (successCount > 0 || newMarqueeImages.length > 0) {
@@ -898,7 +895,7 @@
                 fetchTerms();
             }, [fetchStatus, fetchPortfolio, fetchTerms]);
 
-            // 自動跳出說明視窗 (僅在第一次點開價目表時跳出)
+            // 自動跳出說明視窗
             useEffect(() => {
                 if (activePage === 'pricing' && !hasShownGuide) {
                     setShowPriceGuide(true);
@@ -1175,7 +1172,6 @@
                         return (
                             <section className="py-20 px-6 max-w-5xl mx-auto bg-white min-h-screen animate-fade-in-up">
                             <div className="pt-10 flex flex-col items-center gap-3 mb-12 justify-center">
-                                {/* --- 修改：加深並放大價目表標題 --- */}
                                 <h2 className="text-xl font-medium tracking-widest text-slate-800">委託項目</h2>
                                 
                                 <button 
@@ -1297,7 +1293,7 @@
                                         </div>
                                         <div>
                                             <h4 className="font-bold mb-2 text-slate-700 text-base">付款方式：</h4>
-                                            <p className="font-light mb-1">匯款（提供郵局、中信帳戶）/噗幣（1：40 無條件進入）/中信無卡/LINE PAY MONEY</p>
+                                            <p className="font-light mb-1">匯款（提供郵局、中信帳戶）/噗幣（1：40 無條件進入）/中信無卡/LINE PAY MONEY /支付寶（匯率由我方配合代收提供）</p>
                                             <p className="font-light"><span className="font-bold text-slate-700 bg-amber-100 px-1">確認收到款項才會進行排單</span>，如果要分期的可以討論</p>
                                         </div>
                                     </div>
@@ -1541,7 +1537,7 @@
                 {/* 內容區塊 */}
                 {renderContent()}
 
-                {/* === 新增：價目與上色說明視窗 (Modal) === */}
+                {/* === 價目與上色說明視窗 (Modal) === */}
                 {showPriceGuide && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm animate-fade-in-up">
                         <div className="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto relative shadow-2xl hide-scrollbar flex flex-col">
@@ -1588,7 +1584,7 @@
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <><div className="aspect-[4/3] sm:aspect-square bg-white border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 text-center p-1">待新增：<br/>平塗範例 1</div><div className="aspect-[4/3] sm:aspect-square bg-white border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 text-center p-1">待新增：<br/>平塗範例 2</div></>
+                                                    <React.Fragment><div className="aspect-[4/3] sm:aspect-square bg-white border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 text-center p-1">待新增：<br/>平塗範例 1</div><div className="aspect-[4/3] sm:aspect-square bg-white border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 text-center p-1">待新增：<br/>平塗範例 2</div></React.Fragment>
                                                 )}
                                             </div>
                                         </div>
@@ -1606,7 +1602,7 @@
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <><div className="aspect-[4/3] sm:aspect-square bg-white border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 text-center p-1">待新增：<br/>日系範例 1</div><div className="aspect-[4/3] sm:aspect-square bg-white border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 text-center p-1">待新增：<br/>日系範例 2</div></>
+                                                    <React.Fragment><div className="aspect-[4/3] sm:aspect-square bg-white border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 text-center p-1">待新增：<br/>日系範例 1</div><div className="aspect-[4/3] sm:aspect-square bg-white border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 text-center p-1">待新增：<br/>日系範例 2</div></React.Fragment>
                                                 )}
                                             </div>
                                         </div>
@@ -1617,30 +1613,31 @@
                                             💡 底價為簡單設定的價格，往上增加浮動會越大，物件需另外加價，不指定也可能突然驚喜物件，不能接受自由發揮或需要指定的話請事先提出。
                                         </div>
 
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4">
+                                        {/* 強制維持 3 欄並排網格：grid-cols-3，並使用溢位隱藏避免破版 */}
+                                        <div className="grid grid-cols-3 gap-2 sm:gap-6 pt-4">
                                             {/* 簡單 */}
-                                            <div className="flex flex-col items-center bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-center">
-                                                <h4 className="text-sm font-bold text-slate-700 mb-3 tracking-widest">簡單</h4>
-                                                <div className="w-full aspect-[3/4] bg-slate-100 rounded-xl overflow-hidden mb-4">
-                                                    {guideImages.simple[0] ? <img src={guideImages.simple[0]} className="w-full h-full object-cover hover:scale-105 transition duration-500"/> : <div className="w-full h-full border-2 border-dashed border-slate-200 flex items-center justify-center text-xs text-slate-400">簡單範例</div>}
+                                            <div className="w-full min-w-0 flex flex-col items-center bg-white p-2 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-100 shadow-sm text-center">
+                                                <h4 className="text-[10px] sm:text-sm font-bold text-slate-700 mb-2 sm:mb-3 tracking-widest">簡單</h4>
+                                                <div className="w-full aspect-[3/4] bg-slate-100 rounded-lg sm:rounded-xl overflow-hidden mb-2 sm:mb-4">
+                                                    {guideImages.simple[0] ? <img src={guideImages.simple[0]} className="w-full h-full object-cover hover:scale-105 transition duration-500"/> : <div className="w-full h-full border-2 border-dashed border-slate-200 flex items-center justify-center text-[8px] sm:text-xs text-slate-400">簡單範例</div>}
                                                 </div>
-                                                <p className="text-[11px] text-slate-500 tracking-wider leading-relaxed">角色服裝能想像最簡單沒有多裝飾</p>
+                                                <p className="text-[8px] sm:text-[11px] text-slate-500 tracking-wider leading-relaxed break-words">角色服裝能想像最簡單沒有多裝飾</p>
                                             </div>
                                             {/* 一般 */}
-                                            <div className="flex flex-col items-center bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-center">
-                                                <h4 className="text-sm font-bold text-slate-700 mb-3 tracking-widest">一般</h4>
-                                                <div className="w-full aspect-[3/4] bg-slate-100 rounded-xl overflow-hidden mb-4">
-                                                    {guideImages.normal[0] ? <img src={guideImages.normal[0]} className="w-full h-full object-cover hover:scale-105 transition duration-500"/> : <div className="w-full h-full border-2 border-dashed border-slate-200 flex items-center justify-center text-xs text-slate-400">一般範例</div>}
+                                            <div className="w-full min-w-0 flex flex-col items-center bg-white p-2 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-100 shadow-sm text-center">
+                                                <h4 className="text-[10px] sm:text-sm font-bold text-slate-700 mb-2 sm:mb-3 tracking-widest">一般</h4>
+                                                <div className="w-full aspect-[3/4] bg-slate-100 rounded-lg sm:rounded-xl overflow-hidden mb-2 sm:mb-4">
+                                                    {guideImages.normal[0] ? <img src={guideImages.normal[0]} className="w-full h-full object-cover hover:scale-105 transition duration-500"/> : <div className="w-full h-full border-2 border-dashed border-slate-200 flex items-center justify-center text-[8px] sm:text-xs text-slate-400">一般範例</div>}
                                                 </div>
-                                                <p className="text-[11px] text-slate-500 tracking-wider leading-relaxed">大部分在這邊，有裝飾蝴蝶結等，不是特殊結構的服飾</p>
+                                                <p className="text-[8px] sm:text-[11px] text-slate-500 tracking-wider leading-relaxed break-words">大部分在這邊，有裝飾蝴蝶結等，不是特殊結構的服飾</p>
                                             </div>
                                             {/* 複雜 */}
-                                            <div className="flex flex-col items-center bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-center">
-                                                <h4 className="text-sm font-bold text-slate-700 mb-3 tracking-widest">複雜</h4>
-                                                <div className="w-full aspect-[3/4] bg-slate-100 rounded-xl overflow-hidden mb-4">
-                                                    {guideImages.complex[0] ? <img src={guideImages.complex[0]} className="w-full h-full object-cover hover:scale-105 transition duration-500"/> : <div className="w-full h-full border-2 border-dashed border-slate-200 flex items-center justify-center text-xs text-slate-400">複雜範例</div>}
+                                            <div className="w-full min-w-0 flex flex-col items-center bg-white p-2 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-100 shadow-sm text-center">
+                                                <h4 className="text-[10px] sm:text-sm font-bold text-slate-700 mb-2 sm:mb-3 tracking-widest">複雜</h4>
+                                                <div className="w-full aspect-[3/4] bg-slate-100 rounded-lg sm:rounded-xl overflow-hidden mb-2 sm:mb-4">
+                                                    {guideImages.complex[0] ? <img src={guideImages.complex[0]} className="w-full h-full object-cover hover:scale-105 transition duration-500"/> : <div className="w-full h-full border-2 border-dashed border-slate-200 flex items-center justify-center text-[8px] sm:text-xs text-slate-400">複雜範例</div>}
                                                 </div>
-                                                <p className="text-[11px] text-slate-500 tracking-wider leading-relaxed">特殊結構例如面具、米哈遊（笑死）、大量荷葉邊蕾絲等</p>
+                                                <p className="text-[8px] sm:text-[11px] text-slate-500 tracking-wider leading-relaxed break-words">特殊結構例如面具、米哈遊（笑死）、大量荷葉邊蕾絲等</p>
                                             </div>
                                         </div>
                                     </div>
